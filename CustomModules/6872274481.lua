@@ -9071,7 +9071,7 @@ end)
 
 run(function()
     local ScytheExploit = {Enabled = false}
-    ScytheExploit = GuiLibrary.ObjectsThatCanBeSaved.ExploitWindow.Api.CreateOptionsButton({
+    ScytheExploit = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
         Name = "ScytheSpawner",
         Function = function(callback)
             if callback then 
