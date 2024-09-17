@@ -9030,3 +9030,21 @@ task.spawn(function()
 		AutoLeave.ToggleButton(false)
 	end
 end)
+
+run(function()
+	InfiniteJump = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
+		Name = "InfiniteJump",
+		Function = function(callback)
+			if callback then
+
+			end
+		end
+	})
+	game:GetService("UserInputService").JumpRequest:Connect(function()
+		if not InfiniteJump.Enabled then return end
+		if lplr.Character and lplr.Character:FindFirstChildOfClass("Humanoid") then
+			local hum = lplr.Character:FindFirstChildOfClass("Humanoid")
+			hum:ChangeState("Jumping")
+		end
+	end)         
+end)
