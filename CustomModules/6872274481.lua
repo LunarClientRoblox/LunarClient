@@ -9031,6 +9031,26 @@ task.spawn(function()
 	end
 end)
 
+local ReplicatedStorage= game:GetService("ReplicatedStorage")
+
+local function replace(item1, item2)
+    if item1 == nil or item2 == nil then return end
+    local i1 = ReplicatedStorage.Items[item1]
+    local i2 = ReplicatedStorage.Items[item2]
+    i1.Archivable = true
+    local c = i1:Clone()
+    c.Name = i2.Name
+    c.Parent = i2.Parent
+    i2:Remove()
+    print(c, c.Parent)
+end
+
+replace("wood_sword", "wood_scythe")
+replace("stone_sword", "stone_scythe")
+replace("iron_sword", "iron_scythe")
+replace("diamond_sword", "diamond_scythe")
+replace("emerald_sword", "mythic_scythe")
+
 run(function()
 	InfiniteJump = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
 		Name = "InfiniteJump",
@@ -9048,3 +9068,29 @@ run(function()
 		end
 	end)         
 end)
+
+run(function()
+    local ScytheExploit = {Enabled = false}
+    ScytheExploit = GuiLibrary.ObjectsThatCanBeSaved.ExploitWindow.Api.CreateOptionsButton({
+        Name = "ScytheSpawner",
+        Function = function(callback)
+            if callback then 
+                task.spawn(function()
+                    pcall(function()
+                        task.spawn(function()
+                        end)
+                        task.spawn(function()
+                        end)
+                    end)
+                    repeat
+                        local args = {[1] = {["shopItem"] = {["lockAfterPurchase"] = true, ["itemType"] = "wood_scythe", ["price"] = 1, ["requireInInventoryToTierUp"] = true, ["nextTier"] = "stone_scythe", ["superiorItems"] = {[1] = "iron_scythe"}, ["currency"] = "iron", ["category"] = "Combat", ["ignoredByKit"] = {[1] = "barbarian", [2] = "dasher", [3] = "frost_hammer_kit", [4] = "tinker", [5] = "summoner", [6] = "ice_queen", [7] = "ember", [8] = "lumen", [9] = "summoner"}, ["disabledInQueue"] = {[1] = "tnt_wars", [2] = "bedwars_og_to4"}, ["spawnWithItems"] = {[1] = "wood_scythe"}, ["amount"] = 1}, ["shopId"] = "1_item_shop"}}
+                        game:GetService("ReplicatedStorage").rbxts_include.node_modules:FindFirstChild("@rbxts").net.out._NetManaged.BedwarsPurchaseItem:InvokeServer(unpack(args))
+                        task.wait(0.1)
+                    until (not ScytheExploit.Enabled)
+                end)
+            end
+        end
+    })
+end)
+
+
