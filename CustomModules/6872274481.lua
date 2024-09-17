@@ -9093,4 +9093,59 @@ run(function()
     })
 end)
 
+local function createDisabler()
+    local Disabler = { Enabled = false }
+    local scythe = { Enabled = false }
+
+    local Bypass = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
+        Name = "AntiCheat Bypass",
+        Function = function(callback)
+            if callback then
+                RunLoops:BindToStepped("Disabler", function()
+                    if scythe.Enabled then
+                        local item = getItemNear("scythe")
+                        if item and lplr.Character.HandInvItem.Value == item.tool and bedwars.CombatController then
+                            bedwars.Client:Get("ScytheDash"):SendToServer({ direction = lplr.Character.HumanoidRootPart.CFrame.LookVector * 9e9 })
+                            if entityLibrary.isAlive and entityLibrary.character.Head.Transparency ~= 0 then
+                                store.scythe = tick() + 1
+                            end
+                        end
+                    end
+                    if client.Enabled then
+                        if lplr.PlayerScripts.Modules:FindFirstChild("anticheat") then
+                            lplr.PlayerScripts.Modules.anticheat:Destroy()
+                        end
+                        if lplr.PlayerScripts:FindFirstChild("GameAnalyticsClient") then
+                            lplr.PlayerScripts.GameAnalyticsClient:Destroy()
+                        end
+                        if game:GetService("ReplicatedStorage").Modules:FindFirstChild("anticheat") then
+                            game:GetService("ReplicatedStorage").Modules:FindFirstChild("anticheat"):Destroy()
+                        end
+                    end
+                end)
+            else
+                RunLoops:UnbindFromStepped("Bypass")
+                amount = 0
+            end
+        end,
+        HoverText = "Disables anticheat via scythe",
+        ExtraText = function()
+            local amount = 0
+            if scythe.Enabled then
+                amount = amount + 1
+            end
+            return amount .. " Enabled"
+        end
+    })
+
+    scythe = Bypass.CreateToggle({
+        Name = "Scythe",
+        Default = true,
+        Function = function(callback)
+            scythe.Enabled = callback
+        end
+    })
+end
+
+createDisabler()
 
