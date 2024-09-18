@@ -9149,4 +9149,500 @@ end
 
 createDisabler()
 
+run(function()
+	local HotbarMods = {}
+	local HotbarRounding = {}
+	local HotbarHighlight = {}
+	local HotbarColorToggle = {}
+	local HotbarHideSlotIcons = {}
+	local HotbarSlotNumberColorToggle = {}
+	local HotbarRoundRadius = {Value = 8}
+	local HotbarColor = {Hue = 0, Sat = 0, Value = 0}
+	local HotbarHighlightColor = {Hue = 0, Sat = 0, Value = 0}
+	local HotbarSlotNumberColor = {Hue = 0, Sat = 0, Value = 0}
+	local hotbarsloticons = {}
+	local hotbarobjects = {}
+	local hotbarcoloricons = {}
+	local HotbarModsGradient = {}
+	local hotbarslotgradients = {}
+	local HotbarModsGradientColor = {Hue = 0, Sat = 0, Value = 0}
+	local HotbarModsGradientColor2 = {Hue = 0, Sat = 0, Value = 0}
+	local function hotbarFunction()
+		local inventoryicons = ({pcall(function() return lplr.PlayerGui.hotbar['1'].ItemsHotbar end)})[2]
+		if inventoryicons and type(inventoryicons) == 'userdata' then
+			for i,v in next, inventoryicons:GetChildren() do 
+				local sloticon = ({pcall(function() return v:FindFirstChildWhichIsA('ImageButton'):FindFirstChildWhichIsA('TextLabel') end)})[2]
+				if type(sloticon) ~= 'userdata' then 
+					continue
+				end
+				if HotbarColorToggle.Enabled and not HotbarModsGradient.Enabled then 
+					sloticon.Parent.BackgroundColor3 = Color3.fromHSV(HotbarColor.Hue, HotbarColor.Sat, HotbarColor.Value)
+					table.insert(hotbarcoloricons, sloticon.Parent) 
+				end
+				if HotbarModsGradient.Enabled then 
+					sloticon.Parent.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+					if sloticon.Parent:FindFirstChildWhichIsA('UIGradient') == nil then 
+						local gradient = Instance.new('UIGradient') 
+						local color = Color3.fromHSV(HotbarModsGradientColor.Hue, HotbarModsGradientColor.Sat, HotbarModsGradientColor.Value)
+						local color2 = Color3.fromHSV(HotbarModsGradientColor2.Hue, HotbarModsGradientColor2.Sat, HotbarModsGradientColor2.Value)
+						gradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, color), ColorSequenceKeypoint.new(1, color2)})
+						gradient.Parent = sloticon.Parent
+						table.insert(hotbarslotgradients, gradient)
+						table.insert(hotbarcoloricons, sloticon.Parent) 
+					end
+				end
+				if HotbarRounding.Enabled then 
+					local uicorner = Instance.new('UICorner')
+					uicorner.Parent = sloticon.Parent
+					uicorner.CornerRadius = UDim.new(0, HotbarRoundRadius.Value)
+					table.insert(hotbarobjects, uicorner)
+				end
+				if HotbarHighlight.Enabled then
+					local highlight = Instance.new('UIStroke')
+					highlight.Color = Color3.fromHSV(HotbarHighlightColor.Hue, HotbarHighlightColor.Sat, HotbarHighlightColor.Value)
+					highlight.Thickness = 1.3 
+					highlight.Parent = sloticon.Parent
+					table.insert(hotbarobjects, highlight)
+				end
+				if HotbarHideSlotIcons.Enabled then 
+					sloticon.Visible = false 
+				end
+				table.insert(hotbarsloticons, sloticon)
+			end 
+		end
+	end
+	HotbarMods = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
+		Name = 'HotbarMods',
+		HoverText = 'Customize your hotbar! Add and remove gradients, corners, colors and much more!',
+		Function = function(calling)
+			if calling then 
+				task.spawn(function()
+					table.insert(HotbarMods.Connections, lplr.PlayerGui.DescendantAdded:Connect(function(v)
+						if v.Name == 'hotbar' then
+							hotbarFunction()
+						end
+					end))
+					hotbarFunction()
+				end)
+			else
+				for i,v in hotbarsloticons do 
+					pcall(function() v.Visible = true end)
+				end
+				for i,v in hotbarcoloricons do 
+					pcall(function() v.BackgroundColor3 = Color3.fromRGB(29, 36, 46) end)
+				end
+				for i,v in hotbarobjects do
+					pcall(function() v:Destroy() end)
+				end
+				for i,v in next, hotbarslotgradients do 
+					pcall(function() v:Destroy() end)
+				end
+				table.clear(hotbarobjects)
+				table.clear(hotbarsloticons)
+				table.clear(hotbarcoloricons)
+			end
+		end
+	})
+	HotbarColorToggle = HotbarMods.CreateToggle({
+		Name = 'Slot Color',
+		Function = function(calling)
+			pcall(function() HotbarColor.Object.Visible = calling end)
+			pcall(function() HotbarColorToggle.Object.Visible = calling end)
+			if HotbarMods.Enabled then 
+				HotbarMods.ToggleButton(false)
+				HotbarMods.ToggleButton(false)
+			end
+		end
+	})
+	HotbarModsGradient = HotbarMods.CreateToggle({
+		Name = 'Gradient Slot Color',
+		Function = function(calling)
+			pcall(function() HotbarModsGradientColor.Object.Visible = calling end)
+			pcall(function() HotbarModsGradientColor2.Object.Visible = calling end)
+			if HotbarMods.Enabled then 
+				HotbarMods.ToggleButton(false)
+				HotbarMods.ToggleButton(false)
+			end
+		end
+	})
+	HotbarModsGradientColor = HotbarMods.CreateColorSlider({
+		Name = 'Gradient Color',
+		Function = function(h, s, v)
+			for i,v in next, hotbarslotgradients do 
+				pcall(function() v.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromHSV(HotbarModsGradientColor.Hue, HotbarModsGradientColor.Sat, HotbarModsGradientColor.Value)), ColorSequenceKeypoint.new(1, Color3.fromHSV(HotbarModsGradientColor2.Hue, HotbarModsGradientColor2.Sat, HotbarModsGradientColor2.Value))}) end)
+			end
+		end
+	})
+	HotbarModsGradientColor2 = HotbarMods.CreateColorSlider({
+		Name = 'Gradient Color 2',
+		Function = function(h, s, v)
+			for i,v in next, hotbarslotgradients do 
+				pcall(function() v.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromHSV(HotbarModsGradientColor.Hue, HotbarModsGradientColor.Sat, HotbarModsGradientColor.Value)), ColorSequenceKeypoint.new(1, Color3.fromHSV(HotbarModsGradientColor2.Hue, HotbarModsGradientColor2.Sat, HotbarModsGradientColor2.Value))}) end)
+			end
+		end
+	})
+	HotbarColor = HotbarMods.CreateColorSlider({
+		Name = 'Slot Color',
+		Function = function(h, s, v)
+			for i,v in next, hotbarcoloricons do
+				if HotbarColorToggle.Enabled then
+					pcall(function() v.BackgroundColor3 = Color3.fromHSV(HotbarColor.Hue, HotbarColor.Sat, HotbarColor.Value) end) -- for some reason the 'h, s, v' didn't work :(
+				end
+			end
+		end
+	})
+	HotbarRounding = HotbarMods.CreateToggle({
+		Name = 'Rounding',
+		Function = function(calling)
+			pcall(function() HotbarRoundRadius.Object.Visible = calling end)
+			if HotbarMods.Enabled then 
+				HotbarMods.ToggleButton(false)
+				HotbarMods.ToggleButton(false)
+			end
+		end
+	})
+	HotbarRoundRadius = HotbarMods.CreateSlider({
+		Name = 'Corner Radius',
+		Min = 1,
+		Max = 20,
+		Function = function(calling)
+			for i,v in next, hotbarobjects do 
+				pcall(function() v.CornerRadius = UDim.new(0, calling) end)
+			end
+		end
+	})
+	HotbarHighlight = HotbarMods.CreateToggle({
+		Name = 'Outline Highlight',
+		Function = function(calling)
+			pcall(function() HotbarHighlightColor.Object.Visible = calling end)
+			if HotbarMods.Enabled then 
+				HotbarMods.ToggleButton(false)
+				HotbarMods.ToggleButton(false)
+			end
+		end
+	})
+	HotbarHighlightColor = HotbarMods.CreateColorSlider({
+		Name = 'Highlight Color',
+		Function = function(h, s, v)
+			for i,v in next, hotbarobjects do 
+				if v:IsA('UIStroke') and HotbarHighlight.Enabled then 
+					pcall(function() v.Color = Color3.fromHSV(HotbarHighlightColor.Hue, HotbarHighlightColor.Sat, HotbarHighlightColor.Value) end)
+				end
+			end
+		end
+	})
+	HotbarHideSlotIcons = HotbarMods.CreateToggle({
+		Name = 'No Slot Numbers',
+		Function = function()
+			if HotbarMods.Enabled then 
+				HotbarMods.ToggleButton(false)
+				HotbarMods.ToggleButton(false)
+			end
+		end
+	})
+	HotbarColor.Object.Visible = false
+	HotbarRoundRadius.Object.Visible = false
+	HotbarHighlightColor.Object.Visible = false
+    })
+end)
+
+run(function() 
+	local HealthbarVisuals = {};
+	local HealthbarRound = {};
+	local HealthbarColorToggle = {};
+	local HealthbarGradientToggle = {};
+	local HealthbarGradientColor = {};
+	local HealthbarHighlight = {};
+	local HealthbarHighlightColor = newcolor();
+	local HealthbarGradientRotation = {Value = 0};
+	local HealthbarTextToggle = {};
+	local HealthbarFontToggle = {};
+	local HealthbarTextColorToggle = {};
+	local HealthbarBackgroundToggle = {};
+	local HealthbarText = {ObjectList = {}};
+	local HealthbarInvis = {Value = 0};
+	local HealthbarRoundSize = {Value = 4};
+	local HealthbarFont = {value = 'LuckiestGuy'};
+	local HealthbarColor = newcolor();
+	local HealthbarBackground = newcolor();
+	local HealthbarTextColor = newcolor();
+	local healthbarobjects = safearray();
+	local oldhealthbar;
+	local healthbarhighlight;
+	local textconnection;
+	local function healthbarFunction()
+		if not HealthbarVisuals.Enabled then 
+			return 
+		end
+		local healthbar = ({pcall(function() return lplr.PlayerGui.hotbar['1'].HotbarHealthbarContainer.HealthbarProgressWrapper['1'] end)})[2]
+		if healthbar and type(healthbar) == 'userdata' then 
+			oldhealthbar = healthbar;
+			healthbar.Transparency = (0.1 * HealthbarInvis.Value);
+			healthbar.BackgroundColor3 = (HealthbarColorToggle.Enabled and Color3.fromHSV(HealthbarColor.Hue, HealthbarColor.Sat, HealthbarColor.Value) or healthbar.BackgroundColor3)
+			if HealthbarGradientToggle.Enabled then 
+				healthbar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+				local gradient = (healthbar:FindFirstChildWhichIsA('UIGradient') or Instance.new('UIGradient', healthbar))
+				gradient.Color = ColorSequence.new({
+					ColorSequenceKeypoint.new(0, Color3.fromHSV(HealthbarColor.Hue, HealthbarColor.Sat, HealthbarColor.Value)), 
+					ColorSequenceKeypoint.new(1, Color3.fromHSV(HealthbarGradientColor.Hue, HealthbarGradientColor.Sat, HealthbarGradientColor.Value))
+				})
+				gradient.Rotation = HealthbarGradientRotation.Value
+				table.insert(healthbarobjects, gradient)
+			end
+			for i,v in healthbar.Parent:GetChildren() do 
+				if v:IsA('Frame') and v:FindFirstChildWhichIsA('UICorner') == nil and HealthbarRound.Enabled then
+					local corner = Instance.new('UICorner', v);
+					corner.CornerRadius = UDim.new(0, HealthbarRoundSize.Value);
+					table.insert(healthbarobjects, corner)
+				end
+			end
+			local healthbarbackground = ({pcall(function() return healthbar.Parent.Parent end)})[2]
+			if healthbarbackground and type(healthbarbackground) == 'userdata' then
+				healthbar.Transparency = (0.1 * HealthbarInvis.Value);
+				if HealthbarHighlight.Enabled then 
+					local highlight = Instance.new('UIStroke', healthbarbackground);
+					highlight.Color = Color3.fromHSV(HealthbarHighlightColor.Hue, HealthbarHighlightColor.Sat, HealthbarHighlightColor.Value);
+					highlight.Thickness = 1.6; 
+					healthbarhighlight = highlight
+				end
+				if healthbar.Parent.Parent:FindFirstChildWhichIsA('UICorner') == nil and HealthbarRound.Enabled then 
+					local corner = Instance.new('UICorner', healthbar.Parent.Parent);
+					corner.CornerRadius = UDim.new(0, HealthbarRoundSize.Value);
+					table.insert(healthbarobjects, corner)
+				end 
+				if HealthbarBackgroundToggle.Enabled then
+					healthbarbackground.BackgroundColor3 = Color3.fromHSV(HealthbarBackground.Hue, HealthbarBackground.Sat, HealthbarBackground.Value)
+				end
+			end
+			local healthbartext = ({pcall(function() return healthbar.Parent.Parent['1'] end)})[2]
+			if healthbartext and type(healthbartext) == 'userdata' then 
+				local randomtext = getrandomvalue(HealthbarText.ObjectList)
+				if HealthbarTextColorToggle.Enabled then
+					healthbartext.TextColor3 = Color3.fromHSV(HealthbarTextColor.Hue, HealthbarTextColor.Sat, HealthbarTextColor.Value)
+				end
+				if HealthbarFontToggle.Enabled then 
+					healthbartext.Font = Enum.Font[HealthbarFont.Value]
+				end
+				if randomtext ~= '' and HealthbarTextToggle.Enabled then 
+					healthbartext.Text = randomtext:gsub('<health>', isAlive(lplr, true) and tostring(math.round(lplr.Character:GetAttribute('Health') or 0)) or '0')
+				else
+					pcall(function() healthbartext.Text = tostring(lplr.Character:GetAttribute('Health')) end)
+				end
+				if not textconnection then 
+					textconnection = healthbartext:GetPropertyChangedSignal('Text'):Connect(function()
+						local randomtext = getrandomvalue(HealthbarText.ObjectList)
+						if randomtext ~= '' then 
+							healthbartext.Text = randomtext:gsub('<health>', isAlive() and tostring(math.floor(lplr.Character:GetAttribute('Health') or 0)) or '0')
+						else
+							pcall(function() healthbartext.Text = tostring(math.floor(lplr.Character:GetAttribute('Health'))) end)
+						end
+					end)
+				end
+			end
+		end
+	end
+	HealthbarVisuals = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
+		Name = 'CustomHealthbar',
+		HoverText = 'Customize the color of your healthbar.\nAdd \'<health>\' to your custom text dropdown (if custom text enabled) to insert your health!',
+		Function = function(calling)
+			if calling then 
+				task.spawn(function()
+					table.insert(HealthbarVisuals.Connections, lplr.PlayerGui.DescendantAdded:Connect(function(v)
+						if v.Name == 'HotbarHealthbarContainer' and v.Parent and v.Parent.Parent and v.Parent.Parent.Name == 'hotbar' then
+							healthbarFunction()
+						end
+					end))
+					healthbarFunction()
+				end)
+			else
+				pcall(function() textconnection:Disconnect() end)
+				pcall(function() oldhealthbar.Parent.Parent.BackgroundColor3 = Color3.fromRGB(41, 51, 65) end)
+				pcall(function() oldhealthbar.BackgroundColor3 = Color3.fromRGB(203, 54, 36) end)
+				pcall(function() oldhealthbar.Parent.Parent['1'].Text = tostring(lplr.Character:GetAttribute('Health')) end)
+				pcall(function() oldhealthbar.Parent.Parent['1'].TextColor3 = Color3.fromRGB(255, 255, 255) end)
+				pcall(function() oldhealthbar.Parent.Parent['1'].Font = Enum.Font.LuckiestGuy end)
+				oldhealthbar = nil
+				textconnection = nil
+				for i,v in healthbarobjects do 
+					pcall(function() v:Destroy() end)
+				end
+				table.clear(healthbarobjects);
+				pcall(function() healthbarhighlight:Destroy() end);
+				healthbarhighlight = nil;
+			end
+		end
+	})
+	HealthbarColorToggle = HealthbarVisuals.CreateToggle({
+		Name = 'Main Color',
+		Default = true,
+		Function = function(calling)
+			pcall(function() HealthbarColor.Object.Visible = calling end)
+			pcall(function() HealthbarGradientToggle.Object.Visible = calling end)
+			if HealthbarVisuals.Enabled then
+				HealthbarVisuals.ToggleButton(false)
+				HealthbarVisuals.ToggleButton(false)
+			end
+		end 
+	})
+	HealthbarGradientToggle = HealthbarVisuals.CreateToggle({
+		Name = 'Gradient',
+		Function = function(calling)
+			if HealthbarVisuals.Enabled then
+				HealthbarVisuals.ToggleButton(false)
+				HealthbarVisuals.ToggleButton(false)
+			end
+		end
+	})
+	HealthbarColor = HealthbarVisuals.CreateColorSlider({
+		Name = 'Main Color',
+		Function = function()
+			task.spawn(healthbarFunction)
+		end
+	})
+	HealthbarGradientColor = HealthbarVisuals.CreateColorSlider({
+		Name = 'Secondary Color',
+		Function = function(calling)
+			if HealthbarGradientToggle.Enabled then 
+				task.spawn(healthbarFunction)
+			end
+		end
+	})
+	HealthbarBackgroundToggle = HealthbarVisuals.CreateToggle({
+		Name = 'Background Color',
+		Function = function(calling)
+			pcall(function() HealthbarBackground.Object.Visible = calling end)
+			if HealthbarVisuals.Enabled then
+				HealthbarVisuals.ToggleButton(false)
+				HealthbarVisuals.ToggleButton(false)
+			end
+		end 
+	})
+	HealthbarBackground = HealthbarVisuals.CreateColorSlider({
+		Name = 'Background Color',
+		Function = function() 
+			task.spawn(healthbarFunction)
+		end
+	})
+	HealthbarTextToggle = HealthbarVisuals.CreateToggle({
+		Name = 'Text',
+		Function = function(calling)
+			pcall(function() HealthbarText.Object.Visible = calling end)
+			if HealthbarVisuals.Enabled then
+				HealthbarVisuals.ToggleButton(false)
+				HealthbarVisuals.ToggleButton(false)
+			end
+		end 
+	})
+	HealthbarText = HealthbarVisuals.CreateTextList({
+		Name = 'Text',
+		TempText = 'Healthbar Text',
+		AddFunction = function()
+			if HealthbarVisuals.Enabled then
+				HealthbarVisuals.ToggleButton(false)
+				HealthbarVisuals.ToggleButton(false)
+			end
+		end,
+		RemoveFunction = function()
+			if HealthbarVisuals.Enabled then
+				HealthbarVisuals.ToggleButton(false)
+				HealthbarVisuals.ToggleButton(false)
+			end
+		end
+	})
+	HealthbarTextColorToggle = HealthbarVisuals.CreateToggle({
+		Name = 'Text Color',
+		Function = function(calling)
+			pcall(function() HealthbarTextColor.Object.Visible = calling end)
+			if HealthbarVisuals.Enabled then
+				HealthbarVisuals.ToggleButton(false)
+				HealthbarVisuals.ToggleButton(false)
+			end
+		end 
+	})
+	HealthbarTextColor = HealthbarVisuals.CreateColorSlider({
+		Name = 'Text Color',
+		Function = function() 
+			task.spawn(healthbarFunction)
+		end
+	})
+	HealthbarFontToggle = HealthbarVisuals.CreateToggle({
+		Name = 'Text Font',
+		Function = function(calling)
+			pcall(function() HealthbarFont.Object.Visible = calling end)
+			if HealthbarVisuals.Enabled then
+				HealthbarVisuals.ToggleButton(false)
+				HealthbarVisuals.ToggleButton(false)
+			end
+		end 
+	})
+	HealthbarFont = HealthbarVisuals.CreateDropdown({
+		Name = 'Text Font',
+		List = GetEnumItems('Font'),
+		Function = function(calling)
+			if HealthbarVisuals.Enabled then
+				HealthbarVisuals.ToggleButton(false)
+				HealthbarVisuals.ToggleButton(false)
+			end
+		end
+	})
+	HealthbarRound = HealthbarVisuals.CreateToggle({
+		Name = 'Round',
+		Function = function(calling)
+			pcall(function() HealthbarRoundSize.Object.Visible = calling end);
+			if HealthbarVisuals.Enabled then
+				HealthbarVisuals.ToggleButton(false)
+				HealthbarVisuals.ToggleButton(false)
+			end
+		end
+	})
+	HealthbarRoundSize = HealthbarVisuals.CreateSlider({
+		Name = 'Corner Size',
+		Min = 1,
+		Max = 20,
+		Default = 5,
+		Function = function(value)
+			if HealthbarVisuals.Enabled then 
+				pcall(function() 
+					oldhealthbar.Parent:FindFirstChildOfClass('UICorner').CornerRadius = UDim.new(0, value);
+					oldhealthbar.Parent.Parent:FindFirstChildOfClass('UICorner').CornerRadius = UDim.new(0, value)  
+				end)
+			end
+		end
+	})
+	HealthbarHighlight = HealthbarVisuals.CreateToggle({
+		Name = 'Highlight',
+		Function = function(calling)
+			pcall(function() HealthbarHighlightColor.Object.Visible = calling end);
+			if HealthbarVisuals.Enabled then
+				HealthbarVisuals.ToggleButton(false)
+				HealthbarVisuals.ToggleButton(false)
+			end
+		end
+	})
+	HealthbarHighlightColor = HealthbarVisuals.CreateColorSlider({
+		Name = 'Highlight Color',
+		Function = function()
+			if HealthbarVisuals.Enabled then 
+				pcall(function() healthbarhighlight.Color = Color3.fromHSV(HealthbarHighlightColor.Hue, HealthbarHighlightColor.Sat, HealthbarHighlightColor.Value) end)
+			end
+		end
+	})
+	HealthbarInvis = HealthbarVisuals.CreateSlider({
+		Name = 'Invisibility',
+		Min = 0,
+		Max = 10,
+		Function = function(value)
+			pcall(function() 
+				oldhealthbar.Transparency = (0.1 * value);
+				oldhealthbar.Parent.Parent.Transparency = (0.1 * HealthbarInvis.Value); 
+			end)
+		end
+	})
+	HealthbarBackground.Object.Visible = false;
+	HealthbarText.Object.Visible = false;
+	HealthbarTextColor.Object.Visible = false;
+	HealthbarFont.Object.Visible = false;
+	HealthbarRoundSize.Object.Visible = false;
+	HealthbarHighlightColor.Object.Visible = false;
+end)
 
