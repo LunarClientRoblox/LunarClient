@@ -9802,3 +9802,190 @@ run(function()
         ["Default"] = 5
     })
 end)
+
+run(function()
+	local Changed = {["Enabled"] = false}
+	local ThemeChanger = {["Enabled"] = false}
+	local SelectedTheme = {["Value"] = "ChillPurpleSky"}
+	local AvaiableThemes = {
+		["ChillPurpleSky"] = function() 
+			task.spawn(function()
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=5260808177"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=5260653793"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=5260817288"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=5260800833"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=5260811073"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=5260824661"
+				game.Lighting.FogColor = Color3.new(236, 88, 241)
+				game.Lighting.FogEnd = "200"
+				game.Lighting.FogStart = "0"
+				game.Lighting.Ambient = Color3.new(0.5, 0, 1)
+			end)
+		end,
+		["SpaceSky"] = function() 
+			task.spawn(function()
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=1735468027"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=1735500192"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=1735467260"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=1735467682"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=1735466772"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=1735500898"
+				game.Lighting.FogColor = Color3.new(236, 88, 241)
+				game.Lighting.FogEnd = "200"
+				game.Lighting.FogStart = "0"
+				game.Lighting.Ambient = Color3.new(0.5, 0, 1)
+			end)
+		end,
+		["MidNightPurpleSky"] = function() 
+			task.spawn(function()
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=187713366"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=187712428"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=187712836"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=187713755"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=187714525"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=187712111"
+				game.Lighting.FogColor = Color3.new(236, 88, 241)
+				game.Lighting.FogEnd = "200"
+				game.Lighting.FogStart = "0"
+				game.Lighting.Ambient = Color3.new(0.5, 0, 1)
+			end)
+		end,
+		["Chill"] = function()
+			task.spawn(function()
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=169210090"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=169210108"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=169210121"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=169210133"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=169210143"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=169210149"
+			end)
+		end,
+		["MountainSky"] = function()
+			task.spawn(function()
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=174457450"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=174457519"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=174457566"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=174457651"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=174457702"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=174457748"
+			end)
+		end,
+		["Darkness"] = function()
+			task.spawn(function()
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=2240134413"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=2240136039"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=2240130790"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=2240133550"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=2240132643"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=2240135222"
+			end)
+		end,
+		["RealisticSky"] = function() 
+			task.spawn(function()
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=144933338"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=144931530"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=144933262"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=144933244"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=144933299"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=144931564"
+			end)
+		end,
+        ["AnimeSky"] = function() 
+			task.spawn(function()
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=6778646360"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=6778658683"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=6778648039"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=6778649136"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=6778650519"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=6778658364"
+			end)
+        end,
+        ["PinkSky"] = function() 
+			task.spawn(function()
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=271042516"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=271077243"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=271042556"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=271042310"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=271042467"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=271077958"
+			end)
+        end,
+        ["MoonLight"] = function() 
+			task.spawn(function()
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=12064107"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=12064152"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=12064121"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=12063984"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=12064115"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=12064131"
+			end)
+        end,
+        ["AstroidBelt"] = function() 
+			task.spawn(function()
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=16262356578"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=16262358026"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=16262360469"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=16262362003"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=16262363873"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=16262366016"
+			end)
+        end,
+        ["RainySky"] = function() 
+			task.spawn(function()
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=4495864450"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=4495864887"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=4495865458"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=4495866035"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=4495866584"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=4495867486"
+			end)
+        end,
+        ["RainyNight"] = function() 
+			task.spawn(function()
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=149679669"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=149681979"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=149679690"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=149679709"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=149679722"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=149680199"
+			end)
+        end,
+        ["StormyNight"] = function() 
+			task.spawn(function()
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=15502511288"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=15502508460"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=15502510289"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=15502507918"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=15502509398"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=15502511911"
+			end)
+		end
+	}
+	ThemeChanger = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
+		["Name"] = "ThemeChanger",
+		["Function"] = function(callback) 
+			if callback then
+				AvaiableThemes[SelectedTheme["Value"]]() 
+			else
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=7018684000"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=6334928194"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=7018684000"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=7018684000"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=7018684000"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=7018689553"
+				game.Lighting.FogColor = Color3.new(1, 1, 1)
+				game.Lighting.FogEnd = "10000"
+				game.Lighting.FogStart = "0"
+				game.Lighting.Ambient = Color3.new(0, 0, 0)
+			end
+		end,
+		["ExtraText"] = function()
+			return SelectedTheme["Value"]
+		end
+	})	
+	SelectedTheme = ThemeChanger.CreateDropdown({
+		["Name"] = "Theme",
+		["Function"] = function() end,
+		["List"] = {"ChillPurpleSky","SpaceSky","MidNightPurpleSky", "RealisticSky", "Darkness", "MountainSky", "Chill", "RainySky", "AnimeSky", "StormyNight", "PinkSky", "RainyNight", "AstroidBelt", "MoonLight"}
+	})
+end)
