@@ -2607,7 +2607,7 @@ run(function()
 				FlyAnywayProgressBarFrame2.Visible = true
 				FlyAnywayProgressBarFrame2.Parent = FlyAnywayProgressBarFrame
 				local FlyAnywayProgressBartext = Instance.new("TextLabel")
-				FlyAnywayProgressBartext.Text = "2s"
+				FlyAnywayProgressBartext.Text = "5s"
 				FlyAnywayProgressBartext.Font = Enum.Font.Gotham
 				FlyAnywayProgressBartext.TextStrokeTransparency = 0
 				FlyAnywayProgressBartext.TextColor3 =  Color3.new(0.9, 0.9, 0.9)
