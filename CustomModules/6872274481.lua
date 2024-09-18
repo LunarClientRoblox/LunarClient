@@ -9150,97 +9150,36 @@ end
 createDisabler()
 
 run(function()
-    local AnticheatBypass = {["Enabled"] = false}
-    local AnticheatBypassMode = {["Value"] = 'LookVector'}
-    local baller1movement = {["Value"] = 20}
-    local baller2movement = {["Value"] = 20}
-    local baller3movement = {["Value"] = 20}
-    local randommovement = {["Value"] = false}
-    local vecmultiplierongod = {["Value"] = 1000000}
-    AnticheatBypass = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"]["CreateOptionsButton"]({
-        ["Name"] = "AnticheatBypass",
-        ["HoverText"] = 'Bypasses the AntiCheat using the scythe',
-        ["Function"] = function(callback)
-            if callback then 
-                task.spawn(function()
-                    repeat 
-                        task.wait()
-                        if Disabler then
-                            if (scytheitem and lplr.Character.HandInvItem.Value == scytheitem.tool) or (scytheitem2 and lplr.Character.HandInvItem.Value == scytheitem2.tool) then
-                                if AnticheatBypassMode["Value"] == 'LookVector' then
-                                    bedwars.ClientHandler:Get'ScytheDash':SendToServer({direction = lplr.Character.HumanoidRootPart.CFrame.LookVector * vecmultiplierongod.Value})
-                                elseif AnticheatBypassMode["Value"] == 'MoveDirection' then
-                                    bedwars.ClientHandler:Get'ScytheDash':SendToServer({direction = lplr.Character.HumanoidRootPart.CFrame.LookVector})
-                                end
-                                if randommovement["Value"] then 
-                                    repeat 
-                                        wait()
-                                        lplr.Character.HumanoidRootPart.Velocity = Vector3.new(math.random(-baller1movement.Value, baller1movement.Value), math.random(-baller2movement.Value, baller2movement.Value), math.random(-baller3movement.Value, baller3movement.Value))
-                                    until not randommovement["Value"]
-                                end
+    local Dupe = {["Enabled"] = false}
+    Dupe = GuiLibrary["ObjectsThatCanBeSaved"]["RenderWindow"]["Api"]["CreateOptionsButton"]({
+        Name = 'Dupe',
+        Function = function(call)
+            if call then
+                    if not getItemNear('headhunter') then
+                        bedwars.Client:GetService("BedwarsPurchaseItem"):CallServerAsync({
+                            shopItem = {
+                                currency = "emerald",
+                                itemType = "headhunter",
+                                amount = "1",
+                                price = "0",
+                                category = "Combat"
+                            },
+                            shopId = "2_item_shop_1"
+                        }):andThen(function(p11)
+                            if p11 then
+                                game:GetService("ReplicatedStorage")("rbxts_include")("node_modules")("@rbxts.net.out")("_NetManaged.SetInvItem")
+                                bedwars.SoundManager:playSound(bedwars.SoundList.BEDWARS_PURCHASE_ITEM)
+                                bedwars.ClientStoreHandler:dispatch({
+                                    type = "BedwarsAddItemPurchased",
+                                    itemType = "headhunter"
+                                })
+                                warningNotification('Gyat', 'Bought Spear!', 6)
                             end
-                        end
-                    until not AnticheatBypass["Enabled"]
-                end)
+                            res = p11
+                        end)
+                    end
+                end
             end
-        end,
-        ["Default"] = false,
-        ["ExtraText"] = function()
-            return AnticheatBypassMode["Value"]
         end
     })
-    AnticheatBypassMode = AnticheatBypass["CreateDropdown"]({
-        ["Name"] = 'Mode',
-        ["List"] = {
-            'LookVector',
-            'MoveDirection',
-        },
-        ["HoverText"] = 'Direction Speed Mode',
-        ["Function"] = function(value)
-            AnticheatBypassMode["Value"] = value
-        end
-    })
-    lookvecmultifr = AnticheatBypass["CreateToggle"]({
-        ["Name"] = "LookVector Multiplier val",
-        ["Function"] = function(v)
-            vecmultiplierongod["Value"] = v
-        end,
-        ["HoverText"] = "Changes the look vector multiplier value"
-    })
-    randommovement = AnticheatBypass["CreateToggle"]({
-        ["Name"] = "Random Movement",
-        ["Function"] = function(callback)
-            randommovement["Value"] = callback and true or false
-        end,
-        ["Default"] = true
-    })
-    if randommovement.Enabled then
-        baller1 = AnticheatBypass["CreateSlider"]({
-            ["Name"] = "Movement1",
-            ["Min"] = 1,
-            ["Max"] = 100,
-            ["Default"] = baller1movement.Value,
-            ["Function"] = function(val)
-               baller1movement["Value"] = val 
-        end
-    })
-    baller2 = AnticheatBypass["CreateSlider"]({
-        ["Name"] = "Movement2",
-        ["Min"] = 1,
-        ["Max"] = 100,
-        ["Default"] = baller2movement["Value"],
-        ["Function"] = function(val)
-            baller2movement["Value"] = val 
-        end
-    })
-    baller3 = AnticheatBypass["CreateSlider"]({
-            ["Name"] = "Movement3",
-            ["Min"] = 1,
-            ["Max"] = 100,
-            ["Default"] = baller3movement.Value,
-            ["Function"] = function(val)
-                baller3movement["Value"] = val 
-            end
-        })
-    end
 end)
