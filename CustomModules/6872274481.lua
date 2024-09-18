@@ -9989,3 +9989,124 @@ run(function()
 		["List"] = {"ChillPurpleSky","SpaceSky","MidNightPurpleSky", "RealisticSky", "Darkness", "MountainSky", "Chill", "RainySky", "AnimeSky", "StormyNight", "PinkSky", "RainyNight", "AstroidBelt", "MoonLight"}
 	})
 end)
+
+run(function()
+    local TexturePacks = {["Enabled"] = false}
+    local TexturePack = {["Value"] = "DemonSlayerPack"}
+	local Players = game:GetService("Players")
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+	local demonslayer = game:GetObjects("rbxassetid://18637860418")
+    local crystal = game:GetObjects("rbxassetid://18637860418")
+    local void = game:GetObjects("rbxassetid://18637894751")
+	local amethyst = game:GetObjects("rbxassetid://18637811642")
+    local Workspace = game:GetService("Workspace")
+	demonslayer[1].Parent = game:GetService("ReplicatedStorage")
+	crystal[1].Parent = game:GetService("ReplicatedStorage")
+	void[1].Parent = game:GetService("ReplicatedStorage")
+	amethyst[1].Parent = game:GetService("ReplicatedStorage")
+    local textures = {
+		["DemonSlayer"] = demonslayer,
+		["Crystal"] = crystal,
+		["Void"] = void,
+		["Amethyst"] = amethyst,
+	}
+    local function weldmodel(model)
+        for i,v in pairs(model:GetDescendants()) do
+            if v:IsA("Part") then
+                weld = Instance.new("WeldConstraint",model)
+                weld.Part0 = model.PrimaryPart
+                weld.Part1 = v
+                v.Anchored = false
+                v.CanCollide = false
+            end
+        end
+    end
+	local index = {}
+	if Textures.Value == "Crystal" then 
+		index.wood = {"wood_sword",crystal[1].wood}
+		index.stone = {"stone_sword",crystal[1].stone}
+		index.iron = {"iron_sword",crystal[1].iron}
+		index.diamond = {"diamond_sword",crystal[1].diamond}
+		index.emerald = {"emerald_sword",crystal[1].emerald}
+		index.rageblade = {"rageblade",crystal[1].rageblade}
+	elseif Textures.Value == "Void" then 
+		index.wood = {"wood_sword",void[1].wood}
+		index.stone = {"stone_sword",void[1].stone}
+		index.iron = {"iron_sword",void[1].iron}
+		index.diamond = {"diamond_sword",void[1].diamond}
+		index.emerald = {"emerald_sword",void[1].emerald}
+		index.woodaxe = {"wood_axe",void[1].woodaxe}
+		index.stoneaxe = {"stone_axe",void[1].stoneaxe}
+		index.ironaxe = {"iron_axe",void[1].ironaxe}
+		index.diamondaxe = {"diamond_axe",void[1].diamondaxe}
+		index.woodpick = {"wood_pickaxe",void[1].woodpick}
+		index.stonepick = {"stone_pickaxe",void[1].stonepick}
+		index.ironpick = {"iron_pickaxe",void[1].ironpick}
+		index.diamondpick = {"diamond_pickaxe",void[1].diamondpick}
+	elseif Textures.Value == "Amethyst" then
+	    index.wood = {"wood_sword",amethyst[1].wood}
+	    index.stone = {"stone_sword",amethyst[1].stone}
+	    index.iron = {"iron_sword",amethyst[1].iron}
+	    index.diamond = {"diamond_sword",amethyst[1].diamond}
+	    index.emerald = {"emerald_sword",amethyst[1].emerald}
+	    index.rageblade = {"rageblade",amethyst[1].rageblade}
+	    index.woodaxe = {"wood_axe",amethyst[1].woodaxe}
+	    index.stoneaxe = {"stone_axe",amethyst[1].stoneaxe}
+	    index.ironaxe = {"iron_axe",amethyst[1].ironaxe}
+	    index.diamondaxe = {"diamond_axe",amethyst[1].diamondaxe}
+	    index.woodpick = {"wood_pickaxe",amethyst[1].woodpick}
+	    index.stonepick = {"stone_pickaxe",amethyst[1].stonepick}
+	    index.ironpick = {"iron_pickaxe",amethyst[1].ironpick}
+	    index.diamondpick = {"diamond_pickaxe",amethyst[1].diamondpick}
+	end
+    TexturePacks = GuiLibrary["ObjectsThatCanBeSaved"]["RenderWindow"]["Api"]["CreateOptionsButton"]({
+        ["Name"] = "TexturePacks",
+        ["HoverText"] = "Customizes your TexturePacks",
+        ["Function"] = function(callback)
+            if callback then
+				local VM = workspace.Camera.Viewmodel
+				VM.ChildAdded:Connect(function()
+					for i,v in pairs(VM:GetChildren()) do
+						for _,indexed in pairs(index) do
+							if indexed[1] == v.Name then
+								local new = indexed[2]:Clone()
+								weldmodel(new)
+								for i,v in pairs(v:GetDescendants()) do
+									if v:IsA("Part") or v:IsA("UnionOperation") or v:IsA("MeshPart") then
+										v.Transparency = 1
+									end
+								end
+								new.Parent = v
+								new.PrimaryPart.CFrame = v.Handle.CFrame * CFrame.Angles(0,math.rad(90),0)
+								local weld1 = Instance.new("WeldConstraint",v)
+								weld1.Part0 = new.PrimaryPart
+								weld1.Part1 = v.Handle
+								local ThirdPersonItem = game.Players.LocalPlayer.Character:FindFirstChild(v.Name)
+								if ThirdPersonItem then
+									print("3rd person item found",v.Name)
+									local CharacterItem = indexed[2]:Clone()
+									weldmodel(CharacterItem)
+									for i,v in pairs(ThirdPersonItem:GetDescendants()) do
+										if v:IsA("Part") or v:IsA("UnionOperation") or v:IsA("MeshPart") then
+											v.Transparency = 1
+										end
+									end
+									CharacterItem.Parent = ThirdPersonItem
+									CharacterItem.PrimaryPart.CFrame = ThirdPersonItem.Handle.CFrame * CFrame.new(0,-0.45,0) * CFrame.Angles(0,math.rad(90),0)
+									local weld2 = Instance.new("WeldConstraint",CharacterItem)
+									weld2.Part0 = CharacterItem.PrimaryPart
+									weld2.Part1 = ThirdPersonItem.Handle
+								end
+							end
+						end
+					end
+                end)
+            end
+        end
+    })
+	Textures = TexturePacks["CreateDropdown"]({
+        ["Name"] = "Mode",
+        ["List"] = {"DemonSlayer", "Crystal", "Void", "Amethyst"},
+        ["Function"] = function() end,
+    })
+end)
