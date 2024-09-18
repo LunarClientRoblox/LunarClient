@@ -9345,123 +9345,7 @@ run(function()
 	HotbarHighlightColor.Object.Visible = false
 end)
 
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Workspace = game:GetService("Workspace")
-local objs = game:GetObjects("rbxassetid://18416195473")
-local import = objs[1]
-import.Parent = game:GetService("ReplicatedStorage")
-index = {
-    {
-        name = "wood_sword",
-        offset = CFrame.Angles(math.rad(0),math.rad(-100),math.rad(-90)),
-        model = import:WaitForChild("Wood_Sword"),
-    },
-    {
-        name = "stone_sword",
-        offset = CFrame.Angles(math.rad(0),math.rad(-100),math.rad(-90)),
-        model = import:WaitForChild("Stone_Sword"),
-    },
-    {
-        name = "iron_sword",
-        offset = CFrame.Angles(math.rad(0),math.rad(-100),math.rad(-90)),
-        model = import:WaitForChild("Iron_Sword"),
-    },
-    {
-        name = "diamond_sword",
-        offset = CFrame.Angles(math.rad(0),math.rad(-100),math.rad(-90)),
-        model = import:WaitForChild("Diamond_Sword"),
-    },
-    {
-        name = "emerald_sword",
-        offset = CFrame.Angles(math.rad(0),math.rad(-100),math.rad(-90)),
-        model = import:WaitForChild("Diamond_Sword"),
-    }, 
-    {
-        name = "rageblade",
-        offset = CFrame.Angles(math.rad(0),math.rad(-100),math.rad(-90)),
-        model = import:WaitForChild("Diamond_Sword"),
-    }, 
- { 
-	    name = "wood_pickaxe",
-	    offset = CFrame.Angles(math.rad(0), math.rad(-180), math.rad(-95)),
-		model = import:WaitForChild("Wood_Pickaxe"),
-	},
-	{
-		name = "stone_pickaxe",
-		offset = CFrame.Angles(math.rad(0), math.rad(-180), math.rad(-95)),
-		model = import:WaitForChild("Stone_Pickaxe"),
-	},
-        {
-		name = "iron_pickaxe",
-		offset = CFrame.Angles(math.rad(0), math.rad(-180), math.rad(-95)),
-		model = import:WaitForChild("Iron_Pickaxe"),
-	},
-	{
-		name = "diamond_pickaxe",
-		offset = CFrame.Angles(math.rad(0), math.rad(80), math.rad(-95)),
-		model = import:WaitForChild("Diamond_Pickaxe"),
-	  },
-    {
-              
-        name = "wood_axe",
-        offset = CFrame.Angles(math.rad(0), math.rad(-10), math.rad(-95)),
-        model = import:WaitForChild("Wood_Axe"),
-    },
-    {
-        name = "stone_axe",
-        offset = CFrame.Angles(math.rad(0), math.rad(-10), math.rad(-95)),
-        model = import:WaitForChild("Stone_Axe"),
-    },
-    {
-        name = "iron_axe",
-        offset = CFrame.Angles(math.rad(0), math.rad(-10), math.rad(-95)),
-        model = import:WaitForChild("Iron_Axe"),
-     },
-     {
-        name = "diamond_axe",
-        offset = CFrame.Angles(math.rad(0), math.rad(-89), math.rad(-95)),
-        model = import:WaitForChild("Diamond_Axe"),
-     },
 
-
-
-
- }
-local func = Workspace:WaitForChild("Camera").Viewmodel.ChildAdded:Connect(function(tool)
-    if(not tool:IsA("Accessory")) then return end
-    for i,v in pairs(index) do
-        if(v.name == tool.Name) then
-            for i,v in pairs(tool:GetDescendants()) do
-                if(v:IsA("Part") or v:IsA("MeshPart") or v:IsA("UnionOperation")) then
-                    v.Transparency = 1
-                end
-            end
-            local model = v.model:Clone()
-            model.CFrame = tool:WaitForChild("Handle").CFrame * v.offset
-            model.CFrame *= CFrame.Angles(math.rad(0),math.rad(-50),math.rad(0))
-            model.Parent = tool
-            local weld = Instance.new("WeldConstraint",model)
-            weld.Part0 = model
-            weld.Part1 = tool:WaitForChild("Handle")
-            local tool2 = Players.LocalPlayer.Character:WaitForChild(tool.Name)
-            for i,v in pairs(tool2:GetDescendants()) do
-                if(v:IsA("Part") or v:IsA("MeshPart") or v:IsA("UnionOperation")) then
-                    v.Transparency = 1
-                end
-            end
-            local model2 = v.model:Clone()
-            model2.Anchored = false
-            model2.CFrame = tool2:WaitForChild("Handle").CFrame * v.offset
-            model2.CFrame *= CFrame.Angles(math.rad(0),math.rad(-50),math.rad(0))
-            model2.CFrame *= CFrame.new(.7,0,-.8)
-            model2.Parent = tool2
-            local weld2 = Instance.new("WeldConstraint",model)
-            weld2.Part0 = model2
-            weld2.Part1 = tool2:WaitForChild("Handle")
-        end
-    end
-end)
 
 run(function()
     local HackerDetector = {["Enabled"] = false}
@@ -9691,119 +9575,6 @@ run(function()
 end)
 
 run(function()
-    local AntiDeath = {["Enabled"] = false}
-    local JumpBoostMode = {["Value"] = "Velocity"}
-    local AntiDeathTrigger = {["Value"] = 50}
-    local AntiDeathVelocity = {["Value"] = 35}
-    local NotificationDuration = {["Value"] = 5}
-    local AntiDeathCframe = {["Value"] = 35}
-    local AntiDeathTween = {["Value"] = 35}
-    local AutoDisable = {["Enabled"] = true}
-    local AntiDeathNotification = {["Enabled"] = true};
-    local AntiDeathThread;
-    local AntiDeathFunctions = {
-        Velocity = function()
-            lplr.Character.PrimaryPart.Velocity = Vector3.new(0, AntiDeathVelocity.Value, 0)
-        end,
-        CFrame = function()
-            lplr.Character.PrimaryPart.CFrame = CFrame.new(0, AntiDeathCframe.Value, 0)
-        end,
-        Tween = function()
-            tweenService:Create(character.HumanoidRootPart, TweenInfo.new(0.49, Enum.EasingStyle.Linear), {
-                CFrame = lplr.Character.PrimaryPart.CFrame + Vector3.new(0, AntiDeathTween.Value, 0)
-            }):Play()
-        end,
-        InfiniteFly = function()
-            local infinitefly = GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api;
-            if not infinitefly.Enabled then 
-                infinitefly.ToggleButton()
-            end;
-            repeat task.wait() until entityLibrary.isAlive and lplr.Character.Humanoid.Health >= AntiDeathTrigger.Value or not entityLibrary.isAlive;
-            if AutoDisable.Enabled and infinitefly.Enabled and workspace:Raycast(lplr.Character.PrimaryPart.Position, Vector3.new(0, -2000, 0), bedwarsStore and bedwarsStore.blockRaycast or store.blockRaycast) then 
-                infinitefly.ToggleButton()
-            end; 
-        end
-    }
-    AntiDeath = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"]["CreateOptionsButton"]({
-        ["Name"] = "AntiDeath",
-        ["HoverText"] = "Automatically prevents you from dying.",
-        ["Function"] = function(callback)
-            if callback then
-                AntiDeathThread = task.spawn(function()
-                    repeat 
-                        task.wait()
-                        if entityLibrary.isAlive and lplr.Character.Humanoid.Health < AntiDeathTrigger.Value then
-                            pcall(AntiDeathFunctions[JumpBoostMode.Value])
-                        end
-                    until not AntiDeath["Enabled"]
-                end)
-            else
-                pcall(task.cancel, AntiDeathThread)
-            end
-        end
-    })
-    JumpBoostMode = AntiDeath["CreateDropdown"]({
-        ["Name"] = "Mode",
-        ["List"] = {
-            "Velocity",
-            "CFrame",
-            "Tween",
-            "InfiniteFly",
-        },
-        ["HoverText"] = "Mode to prevent death.",
-        ["Function"] = function() end,
-    })
-    AntiDeathTrigger = AntiDeath["CreateSlider"]({
-        ["Name"] = "Health Trigger",
-        ["Min"] = 10,
-        ["Max"] = 100,
-        ["Function"] = function() end,
-        ["Default"] = 50
-    })
-    AutoDisable = AntiDeath["CreateSlider"]({
-        ["Name"] = "AutoDisable",
-        ["Min"] = 10,
-        ["Max"] = 100,
-        ["Function"] = function() end,
-        ["Default"] = 50
-    })
-    AntiDeathVelocity = AntiDeath["CreateSlider"]({
-        ["Name"] = "Velocity",
-        ["Min"] = 1,
-        ["Max"] = 661,
-        ["Function"] = function() end,
-        ["Default"] = 35
-    })
-    AntiDeathCframe = AntiDeath["CreateSlider"]({
-        ["Name"] = "Cframe",
-        ["Min"] = 1,
-        ["Max"] = 1500,
-        ["Function"] = function() end,
-        ["Default"] = 35
-    })
-    AntiDeathTween = AntiDeath["CreateSlider"]({
-        ["Name"] = "Tween",
-        ["Min"] = 1,
-        ["Max"] = 1500,
-        ["Function"] = function() end,
-        ["Default"] = 1000
-    })
-    AntiDeathNotification = AntiDeath["CreateToggle"]({
-        ["Name"] = "Notification",
-        ["Default"] = true,
-        ["Function"] = function(callback) end
-    })
-    NotificationDuration = AntiDeath["CreateSlider"]({
-        ["Name"] = "Duration",
-        ["HoverText"] = "Notification duration time",
-        ["Min"] = 1,
-        ["Max"] = 10,
-        ["Function"] = function() end,
-        ["Default"] = 5
-    })
-end)
-
-run(function()
 	local Changed = {["Enabled"] = false}
 	local ThemeChanger = {["Enabled"] = false}
 	local SelectedTheme = {["Value"] = "ChillPurpleSky"}
@@ -9990,91 +9761,320 @@ run(function()
 	})
 end)
 
-local function weldModel(model)
-    for _, v in pairs(model:GetDescendants()) do
-        if v:IsA("Part") then
-            local weld = Instance.new("WeldConstraint", model)
-            weld.Part0 = model.PrimaryPart
-            weld.Part1 = v
-            v.Anchored = false
-            v.CanCollide = false
-        end
-    end
-end
+run(function()
+	local GetHost = {Enabled = false}
+	GetHost = GuiLibrary.ObjectsThatCanBeSaved.VoidwareWindow.Api.CreateOptionsButton({
+		Name = "GetHost",
+		HoverText = ":troll:",
+		Function = function(callback) 
+			if callback then
+				task.spawn(function()
+					warningNotification("GetHost", "This module is only for show. None of the settings will work.", 5)
+					game.Players.LocalPlayer:SetAttribute("CustomMatchRole", "host")
+				end)
+			end
+		end
+	})
+end)
 
-local function createTexturePack(textureName, textureModel)
-    local index = {}
-    if textureName == "Crystal" then
-        -- ...
-    elseif textureName == "Void" then
-        -- ...
-    elseif textureName == "Amethyst" then
-        -- ...
-    end
+run(function()
+	local HealthbarVisuals = {};
+	local HealthbarRound = {};
+	local HealthbarColorToggle = {};
+	local HealthbarGradientToggle = {};
+	local HealthbarGradientColor = {};
+	local HealthbarHighlight = {};
+	local HealthbarHighlightColor = newcolor();
+	local HealthbarGradientRotation = {Value = 0};
+	local HealthbarTextToggle = {};
+	local HealthbarFontToggle = {};
+	local HealthbarTextColorToggle = {};
+	local HealthbarBackgroundToggle = {};
+	local HealthbarText = {ObjectList = {}};
+	local HealthbarInvis = {Value = 0};
+	local HealthbarRoundSize = {Value = 4};
+	local HealthbarFont = {value = 'LuckiestGuy'};
+	local HealthbarColor = newcolor();
+	local HealthbarBackground = newcolor();
+	local HealthbarTextColor = newcolor();
+	local healthbarobjects = safearray();
+	local oldhealthbar;
+	local healthbarhighlight;
+	local textconnection;
+	local function healthbarFunction()
+		if not HealthbarVisuals.Enabled then 
+			return 
+		end
+		local healthbar = ({pcall(function() return lplr.PlayerGui.hotbar['1'].HotbarHealthbarContainer.HealthbarProgressWrapper['1'] end)})[2]
+		if healthbar and type(healthbar) == 'userdata' then 
+			oldhealthbar = healthbar;
+			healthbar.Transparency = (0.1 * HealthbarInvis.Value);
+			healthbar.BackgroundColor3 = (HealthbarColorToggle.Enabled and Color3.fromHSV(HealthbarColor.Hue, HealthbarColor.Sat, HealthbarColor.Value) or healthbar.BackgroundColor3)
+			if HealthbarGradientToggle.Enabled then 
+				healthbar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+				local gradient = (healthbar:FindFirstChildWhichIsA('UIGradient') or Instance.new('UIGradient', healthbar))
+				gradient.Color = ColorSequence.new({
+					ColorSequenceKeypoint.new(0, Color3.fromHSV(HealthbarColor.Hue, HealthbarColor.Sat, HealthbarColor.Value)), 
+					ColorSequenceKeypoint.new(1, Color3.fromHSV(HealthbarGradientColor.Hue, HealthbarGradientColor.Sat, HealthbarGradientColor.Value))
+				})
+				gradient.Rotation = HealthbarGradientRotation.Value
+				table.insert(healthbarobjects, gradient)
+			end
+			for i,v in healthbar.Parent:GetChildren() do 
+				if v:IsA('Frame') and v:FindFirstChildWhichIsA('UICorner') == nil and HealthbarRound.Enabled then
+					local corner = Instance.new('UICorner', v);
+					corner.CornerRadius = UDim.new(0, HealthbarRoundSize.Value);
+					table.insert(healthbarobjects, corner)
+				end
+			end
+			local healthbarbackground = ({pcall(function() return healthbar.Parent.Parent end)})[2]
+			if healthbarbackground and type(healthbarbackground) == 'userdata' then
+				healthbar.Transparency = (0.1 * HealthbarInvis.Value);
+				if HealthbarHighlight.Enabled then 
+					local highlight = Instance.new('UIStroke', healthbarbackground);
+					highlight.Color = Color3.fromHSV(HealthbarHighlightColor.Hue, HealthbarHighlightColor.Sat, HealthbarHighlightColor.Value);
+					highlight.Thickness = 1.6; 
+					healthbarhighlight = highlight
+				end
+				if healthbar.Parent.Parent:FindFirstChildWhichIsA('UICorner') == nil and HealthbarRound.Enabled then 
+					local corner = Instance.new('UICorner', healthbar.Parent.Parent);
+					corner.CornerRadius = UDim.new(0, HealthbarRoundSize.Value);
+					table.insert(healthbarobjects, corner)
+				end 
+				if HealthbarBackgroundToggle.Enabled then
+					healthbarbackground.BackgroundColor3 = Color3.fromHSV(HealthbarBackground.Hue, HealthbarBackground.Sat, HealthbarBackground.Value)
+				end
+			end
+			local healthbartext = ({pcall(function() return healthbar.Parent.Parent['1'] end)})[2]
+			if healthbartext and type(healthbartext) == 'userdata' then 
+				local randomtext = getrandomvalue(HealthbarText.ObjectList)
+				if HealthbarTextColorToggle.Enabled then
+					healthbartext.TextColor3 = Color3.fromHSV(HealthbarTextColor.Hue, HealthbarTextColor.Sat, HealthbarTextColor.Value)
+				end
+				if HealthbarFontToggle.Enabled then 
+					healthbartext.Font = Enum.Font[HealthbarFont.Value]
+				end
+				if randomtext ~= '' and HealthbarTextToggle.Enabled then 
+					healthbartext.Text = randomtext:gsub('<health>', isAlive(lplr, true) and tostring(math.round(lplr.Character:GetAttribute('Health') or 0)) or '0')
+				else
+					pcall(function() healthbartext.Text = tostring(lplr.Character:GetAttribute('Health')) end)
+				end
+				if not textconnection then 
+					textconnection = healthbartext:GetPropertyChangedSignal('Text'):Connect(function()
+						local randomtext = getrandomvalue(HealthbarText.ObjectList)
+						if randomtext ~= '' then 
+							healthbartext.Text = randomtext:gsub('<health>', isAlive() and tostring(math.floor(lplr.Character:GetAttribute('Health') or 0)) or '0')
+						else
+							pcall(function() healthbartext.Text = tostring(math.floor(lplr.Character:GetAttribute('Health'))) end)
+						end
+					end)
+				end
+			end
+		end
+	end
+	HealthbarVisuals = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"]["CreateOptionsButton"]({
+		Name = 'HealthbarVisuals',
+		HoverText = 'Customize the color of your healthbar.\nAdd \'<health>\' to your custom text dropdown (if custom text enabled) to insert your health.',
+		Function = function(calling)
+			if calling then 
+				task.spawn(function()
+					table.insert(HealthbarVisuals.Connections, lplr.PlayerGui.DescendantAdded:Connect(function(v)
+						if v.Name == 'HotbarHealthbarContainer' and v.Parent and v.Parent.Parent and v.Parent.Parent.Name == 'hotbar' then
+							healthbarFunction()
+						end
+					end))
+					healthbarFunction()
+				end)
+			else
+				pcall(function() textconnection:Disconnect() end)
+				pcall(function() oldhealthbar.Parent.Parent.BackgroundColor3 = Color3.fromRGB(41, 51, 65) end)
+				pcall(function() oldhealthbar.BackgroundColor3 = Color3.fromRGB(203, 54, 36) end)
+				pcall(function() oldhealthbar.Parent.Parent['1'].Text = tostring(lplr.Character:GetAttribute('Health')) end)
+				pcall(function() oldhealthbar.Parent.Parent['1'].TextColor3 = Color3.fromRGB(255, 255, 255) end)
+				pcall(function() oldhealthbar.Parent.Parent['1'].Font = Enum.Font.LuckiestGuy end)
+				oldhealthbar = nil
+				textconnection = nil
+				for i,v in healthbarobjects do 
+					pcall(function() v:Destroy() end)
+				end
+				table.clear(healthbarobjects);
+				pcall(function() healthbarhighlight:Destroy() end);
+				healthbarhighlight = nil;
+			end
+		end
+	})
+	HealthbarColorToggle = HealthbarVisuals.CreateToggle({
+		Name = 'Main Color',
+		Default = true,
+		Function = function(calling)
+			pcall(function() HealthbarColor.Object.Visible = calling end)
+			pcall(function() HealthbarGradientToggle.Object.Visible = calling end)
+			if HealthbarVisuals.Enabled then
+				HealthbarVisuals.ToggleButton(false)
+				HealthbarVisuals.ToggleButton(false)
+			end
+		end 
+	})
+	HealthbarGradientToggle = HealthbarVisuals.CreateToggle({
+		Name = 'Gradient',
+		Function = function(calling)
+			if HealthbarVisuals.Enabled then
+				HealthbarVisuals.ToggleButton(false)
+				HealthbarVisuals.ToggleButton(false)
+			end
+		end
+	})
+	HealthbarColor = HealthbarVisuals.CreateColorSlider({
+		Name = 'Main Color',
+		Function = function()
+			task.spawn(healthbarFunction)
+		end
+	})
+	HealthbarGradientColor = HealthbarVisuals.CreateColorSlider({
+		Name = 'Secondary Color',
+		Function = function(calling)
+			if HealthbarGradientToggle.Enabled then 
+				task.spawn(healthbarFunction)
+			end
+		end
+	})
+	HealthbarBackgroundToggle = HealthbarVisuals.CreateToggle({
+		Name = 'Background Color',
+		Function = function(calling)
+			pcall(function() HealthbarBackground.Object.Visible = calling end)
+			if HealthbarVisuals.Enabled then
+				HealthbarVisuals.ToggleButton(false)
+				HealthbarVisuals.ToggleButton(false)
+			end
+		end 
+	})
+	HealthbarBackground = HealthbarVisuals.CreateColorSlider({
+		Name = 'Background Color',
+		Function = function() 
+			task.spawn(healthbarFunction)
+		end
+	})
+	HealthbarTextToggle = HealthbarVisuals.CreateToggle({
+		Name = 'Text',
+		Function = function(calling)
+			pcall(function() HealthbarText.Object.Visible = calling end)
+			if HealthbarVisuals.Enabled then
+				HealthbarVisuals.ToggleButton(false)
+				HealthbarVisuals.ToggleButton(false)
+			end
+		end 
+	})
+	HealthbarText = HealthbarVisuals.CreateTextList({
+		Name = 'Text',
+		TempText = 'Healthbar Text',
+		AddFunction = function()
+			if HealthbarVisuals.Enabled then
+				HealthbarVisuals.ToggleButton(false)
+				HealthbarVisuals.ToggleButton(false)
+			end
+		end,
+		RemoveFunction = function()
+			if HealthbarVisuals.Enabled then
+				HealthbarVisuals.ToggleButton(false)
+				HealthbarVisuals.ToggleButton(false)
+			end
+		end
+	})
+	HealthbarTextColorToggle = HealthbarVisuals.CreateToggle({
+		Name = 'Text Color',
+		Function = function(calling)
+			pcall(function() HealthbarTextColor.Object.Visible = calling end)
+			if HealthbarVisuals.Enabled then
+				HealthbarVisuals.ToggleButton(false)
+				HealthbarVisuals.ToggleButton(false)
+			end
+		end 
+	})
+	HealthbarTextColor = HealthbarVisuals.CreateColorSlider({
+		Name = 'Text Color',
+		Function = function() 
+			task.spawn(healthbarFunction)
+		end
+	})
+	HealthbarFontToggle = HealthbarVisuals.CreateToggle({
+		Name = 'Text Font',
+		Function = function(calling)
+			pcall(function() HealthbarFont.Object.Visible = calling end)
+			if HealthbarVisuals.Enabled then
+				HealthbarVisuals.ToggleButton(false)
+				HealthbarVisuals.ToggleButton(false)
+			end
+		end 
+	})
+	HealthbarFont = HealthbarVisuals.CreateDropdown({
+		Name = 'Text Font',
+		List = GetEnumItems('Font'),
+		Function = function(calling)
+			if HealthbarVisuals.Enabled then
+				HealthbarVisuals.ToggleButton(false)
+				HealthbarVisuals.ToggleButton(false)
+			end
+		end
+	})
+	HealthbarRound = HealthbarVisuals.CreateToggle({
+		Name = 'Round',
+		Function = function(calling)
+			pcall(function() HealthbarRoundSize.Object.Visible = calling end);
+			if HealthbarVisuals.Enabled then
+				HealthbarVisuals.ToggleButton(false)
+				HealthbarVisuals.ToggleButton(false)
+			end
+		end
+	})
+	HealthbarRoundSize = HealthbarVisuals.CreateSlider({
+		Name = 'Corner Size',
+		Min = 1,
+		Max = 20,
+		Default = 5,
+		Function = function(value)
+			if HealthbarVisuals.Enabled then 
+				pcall(function() 
+					oldhealthbar.Parent:FindFirstChildOfClass('UICorner').CornerRadius = UDim.new(0, value);
+					oldhealthbar.Parent.Parent:FindFirstChildOfClass('UICorner').CornerRadius = UDim.new(0, value)  
+				end)
+			end
+		end
+	})
+	HealthbarHighlight = HealthbarVisuals.CreateToggle({
+		Name = 'Highlight',
+		Function = function(calling)
+			pcall(function() HealthbarHighlightColor.Object.Visible = calling end);
+			if HealthbarVisuals.Enabled then
+				HealthbarVisuals.ToggleButton(false)
+				HealthbarVisuals.ToggleButton(false)
+			end
+		end
+	})
+	HealthbarHighlightColor = HealthbarVisuals.CreateColorSlider({
+		Name = 'Highlight Color',
+		Function = function()
+			if HealthbarVisuals.Enabled then 
+				pcall(function() healthbarhighlight.Color = Color3.fromHSV(HealthbarHighlightColor.Hue, HealthbarHighlightColor.Sat, HealthbarHighlightColor.Value) end)
+			end
+		end
+	})
+	HealthbarInvis = HealthbarVisuals.CreateSlider({
+		Name = 'Invisibility',
+		Min = 0,
+		Max = 10,
+		Function = function(value)
+			pcall(function() 
+				oldhealthbar.Transparency = (0.1 * value);
+				oldhealthbar.Parent.Parent.Transparency = (0.1 * HealthbarInvis.Value); 
+			end)
+		end
+	})
+	HealthbarBackground.Object.Visible = false;
+	HealthbarText.Object.Visible = false;
+	HealthbarTextColor.Object.Visible = false;
+	HealthbarFont.Object.Visible = false;
+	HealthbarRoundSize.Object.Visible = false;
+	HealthbarHighlightColor.Object.Visible = false;
+end)
 
-    local function onChildAdded(parent)
-        for _, v in pairs(parent:GetChildren()) do
-            for _, indexed in pairs(index) do
-                if indexed[1] == v.Name then
-                    local new = indexed[2]:Clone()
-                    weldModel(new)
-                    for _, v in pairs(v:GetDescendants()) do
-                        if v:IsA("Part") or v:IsA("UnionOperation") or v:IsA("MeshPart") then
-                            v.Transparency = 1
-                        end
-                    end
-                    new.Parent = v
-                    new.PrimaryPart.CFrame = v.Handle.CFrame * CFrame.Angles(0, math.rad(90), 0)
-                    local weld1 = Instance.new("WeldConstraint", v)
-                    weld1.Part0 = new.PrimaryPart
-                    weld1.Part1 = v.Handle
-                    local ThirdPersonItem = game.Players.LocalPlayer.Character:FindFirstChild(v.Name)
-                    if ThirdPersonItem then
-                        print("3rd person item found", v.Name)
-                        local CharacterItem = indexed[2]:Clone()
-                        weldModel(CharacterItem)
-                        for _, v in pairs(ThirdPersonItem:GetDescendants()) do
-                            if v:IsA("Part") or v:IsA("UnionOperation") or v:IsA("MeshPart") then
-                                v.Transparency = 1
-                            end
-                        end
-                        CharacterItem.Parent = ThirdPersonItem
-                        CharacterItem.PrimaryPart.CFrame = ThirdPersonItem.Handle.CFrame * CFrame.new(0, -0.45, 0) * CFrame.Angles(0, math.rad(90), 0)
-                        local weld2 = Instance.new("WeldConstraint", CharacterItem)
-                        weld2.Part0 = CharacterItem.PrimaryPart
-                        weld2.Part1 = ThirdPersonItem.Handle
-                    end
-                end
-            end
-        end
-    end
 
-    local texturePack = GuiLibrary["ObjectsThatCanBeSaved"]["RenderWindow"]["Api"]["CreateOptionsButton"]({
-        ["Name"] = "TexturePacks",
-        ["HoverText"] = "Customizes your TexturePacks",
-        ["Function"] = function(callback)
-            if callback then
-                local VM = workspace.Camera.Viewmodel
-                VM.ChildAdded:Connect(onChildAdded)
-            end
-        end
-    })
-
-    local textures = texturePack["CreateDropdown"]({
-        ["Name"] = "Mode",
-        ["List"] = {"DemonSlayer", "Crystal", "Void", "Amethyst"},
-        ["Function"] = function() end,
-    })
-
-    return texturePack, textures
-end
-
-local texturePacks = {}
-local textures = {}
-
-for _, textureName in pairs({"DemonSlayer", "Crystal", "Void", "Amethyst"}) do
-    local textureModel = game:GetObjects("rbxassetid://" .. textureName .. "Pack")
-    local texturePack, texture = createTexturePack(textureName, textureModel)
-    table.insert(texturePacks, texturePack)
-    table.insert(textures, texture)
-end
