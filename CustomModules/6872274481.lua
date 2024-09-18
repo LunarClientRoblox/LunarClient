@@ -2457,7 +2457,7 @@ run(function()
 								end
 							end
 							if FlyAnywayProgressBarFrame then
-								FlyAnywayProgressBarFrame.TextLabel.Text = math.max(onground and 2.5 or math.floor((groundtime - tick()) * 10) / 10, 0).."s"
+								FlyAnywayProgressBarFrame.TextLabel.Text = math.max(onground and 5 or math.floor((groundtime - tick()) * 10) / 10, 0).."s"
 							end
 							lastonground = onground
 						else
