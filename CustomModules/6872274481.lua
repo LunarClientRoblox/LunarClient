@@ -9083,7 +9083,7 @@ run(function()
                         end)
                     end)
                     repeat
-                        local args = {[1] = {["shopItem"] = {["lockAfterPurchase"] = true, ["itemType"] = "wood_scythe", ["price"] = 1, ["requireInInventoryToTierUp"] = true, ["nextTier"] = "stone_scythe", ["superiorItems"] = {[1] = "iron_scythe"}, ["currency"] = "iron", ["category"] = "Combat", ["ignoredByKit"] = {[1] = "barbarian", [2] = "dasher", [3] = "frost_hammer_kit", [4] = "tinker", [5] = "summoner", [6] = "ice_queen", [7] = "ember", [8] = "lumen", [9] = "summoner"}, ["disabledInQueue"] = {[1] = "tnt_wars", [2] = "bedwars_og_to4"}, ["spawnWithItems"] = {[1] = "wood_scythe"}, ["amount"] = 1}, ["shopId"] = "1_item_shop"}}
+                        local args = {[1] = {["shopItem"] = {["lockAfterPurchase"] = true, ["itemType"] = "rageblade", ["price"] = 1, ["requireInInventoryToTierUp"] = true, ["nextTier"] = "stone_scythe", ["superiorItems"] = {[1] = "iron_scythe"}, ["currency"] = "iron", ["category"] = "Combat", ["ignoredByKit"] = {[1] = "barbarian", [2] = "dasher", [3] = "frost_hammer_kit", [4] = "tinker", [5] = "summoner", [6] = "ice_queen", [7] = "ember", [8] = "lumen", [9] = "summoner"}, ["disabledInQueue"] = {[1] = "tnt_wars", [2] = "bedwars_og_to4"}, ["spawnWithItems"] = {[1] = "wood_scythe"}, ["amount"] = 1}, ["shopId"] = "1_item_shop"}}
                         game:GetService("ReplicatedStorage").rbxts_include.node_modules:FindFirstChild("@rbxts").net.out._NetManaged.BedwarsPurchaseItem:InvokeServer(unpack(args))
                         task.wait(0.1)
                     until (not ScytheExploit.Enabled)
@@ -9149,37 +9149,4 @@ end
 
 createDisabler()
 
-run(function()
-    local Dupe = {["Enabled"] = false}
-    Dupe = GuiLibrary["ObjectsThatCanBeSaved"]["RenderWindow"]["Api"]["CreateOptionsButton"]({
-        Name = 'Dupe',
-        Function = function(call)
-            if call then
-                    if not getItemNear('headhunter') then
-                        bedwars.Client:GetService("BedwarsPurchaseItem"):CallServerAsync({
-                            shopItem = {
-                                currency = "emerald",
-                                itemType = "headhunter",
-                                amount = "1",
-                                price = "0",
-                                category = "Combat"
-                            },
-                            shopId = "2_item_shop_1"
-                        }):andThen(function(p11)
-                            if p11 then
-                                game:GetService("ReplicatedStorage")("rbxts_include")("node_modules")("@rbxts.net.out")("_NetManaged.SetInvItem")
-                                bedwars.SoundManager:playSound(bedwars.SoundList.BEDWARS_PURCHASE_ITEM)
-                                bedwars.ClientStoreHandler:dispatch({
-                                    type = "BedwarsAddItemPurchased",
-                                    itemType = "headhunter"
-                                })
-                                warningNotification('Gyat', 'Bought Spear!', 6)
-                            end
-                            res = p11
-                        end)
-                    end
-                end
-            end
-        end
-    })
-end)
+
