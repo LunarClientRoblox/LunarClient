@@ -9445,7 +9445,7 @@ run(function()
 			end
 		end
 	end
-	HealthbarVisuals = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
+	HealthbarVisuals = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
 		Name = 'HealthbarVisuals',
 		HoverText = 'Customize the color of your healthbar.\nAdd \'<health>\' to your custom text dropdown (if custom text enabled) to insert your health.',
 		Function = function(calling)
