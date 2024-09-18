@@ -9343,7 +9343,6 @@ run(function()
 	HotbarColor.Object.Visible = false
 	HotbarRoundRadius.Object.Visible = false
 	HotbarHighlightColor.Object.Visible = false
-    })
 end)
 
 
