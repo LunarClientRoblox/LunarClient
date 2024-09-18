@@ -9212,8 +9212,8 @@ run(function()
 		end
 	end
 	HotbarMods = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
-		Name = 'HotbarMods',
-		HoverText = 'Customize your hotbar! Add and remove gradients, corners, colors and much more!',
+		Name = 'HotbarVisuals',
+		HoverText = 'Add customization to your hotbar.',
 		Function = function(calling)
 			if calling then 
 				task.spawn(function()
@@ -9343,10 +9343,14 @@ run(function()
 	HotbarColor.Object.Visible = false
 	HotbarRoundRadius.Object.Visible = false
 	HotbarHighlightColor.Object.Visible = false
+	local Credits
+	Credits = HotbarMods.CreateCredits({
+        Name = 'CreditsButtonInstance',
+        Credits = 'Render'
     })
 end)
 
-run(function() 
+run(function()
 	local HealthbarVisuals = {};
 	local HealthbarRound = {};
 	local HealthbarColorToggle = {};
@@ -9442,8 +9446,8 @@ run(function()
 		end
 	end
 	HealthbarVisuals = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
-		Name = 'CustomHealthbar',
-		HoverText = 'Customize the color of your healthbar.\nAdd \'<health>\' to your custom text dropdown (if custom text enabled) to insert your health!',
+		Name = 'HealthbarVisuals',
+		HoverText = 'Customize the color of your healthbar.\nAdd \'<health>\' to your custom text dropdown (if custom text enabled) to insert your health.',
 		Function = function(calling)
 			if calling then 
 				task.spawn(function()
@@ -9645,4 +9649,6 @@ run(function()
 	HealthbarRoundSize.Object.Visible = false;
 	HealthbarHighlightColor.Object.Visible = false;
 end)
+
+
 
