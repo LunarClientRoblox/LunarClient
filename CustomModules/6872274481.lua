@@ -9031,3 +9031,679 @@ task.spawn(function()
 	end
 end)
 
+run(function()
+    local HackerDetector = {["Enabled"] = false}
+    local refreshFrequency = {["Value"] = 0}
+    local notifyduration = {["Value"] = 15}
+	local AgeCheck = {["Value"] = 10}
+    local speedACheckToggle = {["Enabled"] = false}
+    local speedBCheckToggle = {["Enabled"] = false}
+    local flyACheckToggle = {["Enabled"] = false}
+    local flyBCheckToggle = {["Enabled"] = false}
+	local altCheckToggle = {["Enabled"] = false}
+    local frame = 0
+    local players = {}
+    local lplrname = lplr["Name"]
+    local function highSpeedCheck(plrname)
+        local alreadyDetected = false
+        local pos
+        local newPos
+        local looped = 0
+        local flagged = 0
+        local mag
+        repeat
+            mag = nil
+            pos = nil
+            newPos = nil
+            if not players[plrname]["isAlive"] then 
+                return 
+            end
+            pos = players[plrname]["pos"]
+            newPos = Vector2.new(pos["X"], pos["Z"])
+            task.wait(0.1)
+            mag = (Vector2.new(players[plrname]["pos"]["X"], players[plrname]["pos"]["Z"]) - newPos)["magnitude"] * 8.94
+            if mag >= 35 then
+                flagged += 1
+            end
+            looped += 1
+        until looped >= 25
+        if flagged >= 22 then
+            if detected[plrname] ~= true and players[plrname]["isAlive"] then
+                warningNotification("HackerDetector", plrname .. " is cheating using ScytheDisabler. (Speed: " .. tostring(math.round(mag * 10) / 10) .. ")", notifyduration["Value"])
+                detected[plrname] = true
+            end
+        end
+    end
+    local function verticalPosCheck(plrname)
+        if players[plrname]["pos"]["Y"] > 500 then
+            if detected[plrname] ~= true and players[plrname]["isAlive"] then
+                warningNotification("HackerDetector", plrname .. " is cheating with InfFly. (YPos: " .. tostring(math.round(players[plrname]["pos"]["Y"])) .. ")", notifyduration["Value"])
+                detected[plrname] = true
+            end
+        end
+    end
+	local function AltCheck(plrname)
+		game.Players.PlayerAdded:Connect(function(player)
+			local Age = player.AccountAge
+			if Age < AgeCheck["Value"] then
+				if detected[plrname] ~= true and players[plrname]["isAlive"] then
+				    warningNotification("HackerDetector", plrname .. "Alt detcted account age:" ..Age, notifyduration["Value"])
+				    detected[plrname] = true
+			    end
+		    end
+		end)
+    end
+    local function flyCheck(plrname)
+        local waited = 0
+        local alreadyDetected = false
+        local oldPlayerPosition = players[plrname]["pos"]["Y"]
+        local oldXZ = Vector2.new(players[plrname]["pos"]["X"], players[plrname]["pos"]["Z"])
+        local newplayerposition = nil
+        if bedwarsStore["matchState"] == 1 then
+            repeat
+                task.wait()
+                if players[plrname]["isAlive"] == false then 
+                    return 
+                end
+                if players[plrname]["floor"] ~= Enum.Material.Air and waited < 1.22 then 
+                    return 
+                end
+                waited += frame
+                if waited >= 1.3 and players[plrname]["pos"]["Y"] > oldPlayerPosition - 60 and players[plrname]["pos"]["Y"] < oldPlayerPosition + 50 and (Vector2.new(players[plrname]["pos"]["X"], players[plrname]["pos"]["Z"]) - oldXZ)["magnitude"] > 10 then
+                    if detected[plrname] ~= true and players[plrname]["isAlive"] then
+                        warningNotification("HackerDetector", plrname .. " is cheating by flying. (Time flew: " .. tostring(math.round(waited * 100) / 100) .. "  YDisplacement: " .. tostring(math.round(players[plrname]["pos"]["Y"] - oldPlayerPosition)) .. ")", notifyduration["Value"])
+                        detected[plrname] = true
+                    end
+                end
+            until waited > 1.5
+        end
+    end
+    local connection
+    local deathTPCheck = {}
+    HackerDetector = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"]["CreateOptionsButton"]({
+        ["Name"] = 'HackerDetector',
+        ["HoverText"] = 'Detects blatant cheaters',
+        ["Function"] = function(callback)
+            if callback then
+                task.spawn(function()
+                    repeat
+                        task.wait(refreshFrequency["Value"] / 100)
+                        for _, plr in next, playersService:GetChildren() do
+                            if bedwarsStore["matchState"] == 1 and plr["Name"] ~= lplrname and plr["TeamColor"] ~= lplr["TeamColor"] and plr["Character"] and plr["Character"]["PrimaryPart"] and plr["Character"]:FindFirstChild("Humanoid") and plr["Character"]["Humanoid"]["Health"] > 0 then
+                                players[plr["Name"]] = {
+                                    ["isAlive"] = true,
+                                    ["pos"] = plr["Character"]["PrimaryPart"]["Position"],
+                                    ["floor"] = plr["Character"]["Humanoid"]["FloorMaterial"]
+                                }
+                                if speedACheckToggle["Enabled"] then 
+                                    highSpeedCheck(plr["Name"]) 
+                                end
+                                if flyBCheckToggle["Enabled"] then 
+                                    verticalPosCheck(plr["Name"])
+                                end
+                                if flyACheckToggle["Enabled"] then 
+                                    flyCheck(plr["Name"]) 
+                                end
+								if altCheckToggle["Enabled"] then
+									AltCheck(plr["Name"])
+								end
+                            else
+                                players[plr["Name"]] = {
+                                    ["isAlive"] = false,
+                                    ["pos"] = nil,
+                                    ["floor"] = nil
+                                }
+                            end
+                        end
+                    until not HackerDetector["Enabled"]
+                end)
+                task.spawn(function()
+                    for _, plr in next, playersService:GetPlayers() do
+                        if plr["Name"] ~= lplr["Name"] then
+                            if speedBCheckToggle["Enabled"] then
+                                local con = plr["CharacterAdded"]:Connect(function()
+                                    repeat
+                                        task.wait()
+                                    until plr["Character"] and plr["Character"]:FindFirstChild("Humanoid") and plr["Character"]["PrimaryPart"]
+                                    task.wait(1.8)
+                                    local suc, pos = pcall(function() return plr["Character"]["PrimaryPart"]["Position"] end)
+                                    local newpos = Vector2.new(pos["X"], pos["Z"])
+                                    task.wait(1.8)
+                                    local suc, pos2 = pcall(function() return plr["Character"]["PrimaryPart"]["Position"] end)
+                                    local newpos2 = Vector2.new(pos2["X"], pos2["Z"])
+                                    local mag = (newpos2 - newpos)["magnitude"]
+                                    if mag >= 80 then
+                                        if detected[plr["Name"]] ~= true then
+                                            warningNotification("HackerDetector", plr["Name"] .. " is cheating using DeathTP. (Speed: " .. tostring(math.round(mag * 10) / 10) .. ")", notifyduration["Value"])
+                                            detected[plr["Name"]] = true
+                                        end
+                                    end
+                                end)
+                                table.insert(deathTPCheck, con)
+                            end
+                        end
+                    end
+                end)
+            else
+                for i, v in next, deathTPCheck do
+                    if v["Disconnect"] then
+                        pcall(function() 
+                            v:Disconnect() 
+                        end)
+                        continue
+                    end
+                    if v["disconnect"] then
+                        pcall(function() 
+                            v:disconnect() 
+                        end)
+                        continue
+                    end
+                end
+                table.clear(deathTPCheck)
+                if connection then
+                    connection:Disconnect()
+                end
+            end
+        end
+    })
+    refreshFrequency = HackerDetector["CreateSlider"]({
+        ["Name"] = "Check Cooldown",
+        ["HoverText"] = "Sets how often the checks run (except DeathTP)",
+        ["Min"] = 0,
+        ["Max"] = 100,
+        ["Double"] = 100,
+        ["Default"] = 0,
+        ["Function"] = function() end
+    })
+    notifyduration = HackerDetector["CreateSlider"]({
+        ["Name"] = "Duration",
+        ["HoverText"] = "Duration of the notification",
+        ["Min"] = 0,
+        ["Max"] = 60,
+        ["Default"] = 15,
+        ["Function"] = function() end
+    })
+	AgeCheck = HackerDetector["CreateSlider"]({
+        ["Name"] = "Age Check",
+        ["HoverText"] = "Age to detect alt accounts",
+        ["Min"] = 0,
+        ["Max"] = 50,
+        ["Default"] = 10,
+        ["Function"] = function() end
+    })
+    speedACheckToggle = HackerDetector["CreateToggle"]({
+        ["Name"] = "Disabler",
+        ["Default"] = true,
+        ["Function"] = function(callback) end
+    })
+    speedBCheckToggle = HackerDetector["CreateToggle"]({
+        ["Name"] = "DeathTP",
+        ["Default"] = true,
+        ["Function"] = function(callback) end
+    })
+    flyACheckToggle = HackerDetector["CreateToggle"]({
+        ["Name"] = "Flight",
+        ["Default"] = true,
+        ["Function"] = function(callback) end
+    })
+    flyBCheckToggle = HackerDetector["CreateToggle"]({
+        ["Name"] = "Infinite Fight",
+        ["Default"] = true,
+        ["Function"] = function(callback) end
+    })
+	altCheckToggle = HackerDetector["CreateToggle"]({
+        ["Name"] = "AltDetector",
+        ["Default"] = true,
+        ["Function"] = function(callback) end
+    })
+end)
+
+run(function()
+    local AntiDeath = {["Enabled"] = false}
+    local JumpBoostMode = {["Value"] = "Velocity"}
+    local AntiDeathTrigger = {["Value"] = 50}
+    local AntiDeathVelocity = {["Value"] = 35}
+    local NotificationDuration = {["Value"] = 5}
+    local AntiDeathCframe = {["Value"] = 35}
+    local AntiDeathTween = {["Value"] = 35}
+    local AutoDisable = {["Enabled"] = true}
+    local AntiDeathNotification = {["Enabled"] = true};
+    local AntiDeathThread;
+    local AntiDeathFunctions = {
+        Velocity = function()
+            lplr.Character.PrimaryPart.Velocity = Vector3.new(0, AntiDeathVelocity.Value, 0)
+        end,
+        CFrame = function()
+            lplr.Character.PrimaryPart.CFrame = CFrame.new(0, AntiDeathCframe.Value, 0)
+        end,
+        Tween = function()
+            tweenService:Create(character.HumanoidRootPart, TweenInfo.new(0.49, Enum.EasingStyle.Linear), {
+                CFrame = lplr.Character.PrimaryPart.CFrame + Vector3.new(0, AntiDeathTween.Value, 0)
+            }):Play()
+        end,
+        InfiniteFly = function()
+            local infinitefly = GuiLibrary.ObjectsThatCanBeSaved.InfiniteFlyOptionsButton.Api;
+            if not infinitefly.Enabled then 
+                infinitefly.ToggleButton()
+            end;
+            repeat task.wait() until entityLibrary.isAlive and lplr.Character.Humanoid.Health >= AntiDeathTrigger.Value or not entityLibrary.isAlive;
+            if AutoDisable.Enabled and infinitefly.Enabled and workspace:Raycast(lplr.Character.PrimaryPart.Position, Vector3.new(0, -2000, 0), bedwarsStore and bedwarsStore.blockRaycast or store.blockRaycast) then 
+                infinitefly.ToggleButton()
+            end; 
+        end
+    }
+    AntiDeath = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"]["CreateOptionsButton"]({
+        ["Name"] = "AntiDeath",
+        ["HoverText"] = "Automatically prevents you from dying.",
+        ["Function"] = function(callback)
+            if callback then
+                AntiDeathThread = task.spawn(function()
+                    repeat 
+                        task.wait()
+                        if entityLibrary.isAlive and lplr.Character.Humanoid.Health < AntiDeathTrigger.Value then
+                            pcall(AntiDeathFunctions[JumpBoostMode.Value])
+                        end
+                    until not AntiDeath["Enabled"]
+                end)
+            else
+                pcall(task.cancel, AntiDeathThread)
+            end
+        end
+    })
+    JumpBoostMode = AntiDeath["CreateDropdown"]({
+        ["Name"] = "Mode",
+        ["List"] = {
+            "Velocity",
+            "CFrame",
+            "Tween",
+            "InfiniteFly",
+        },
+        ["HoverText"] = "Mode to prevent death.",
+        ["Function"] = function() end,
+    })
+    AntiDeathTrigger = AntiDeath["CreateSlider"]({
+        ["Name"] = "Health Trigger",
+        ["Min"] = 10,
+        ["Max"] = 100,
+        ["Function"] = function() end,
+        ["Default"] = 50
+    })
+    AutoDisable = AntiDeath["CreateSlider"]({
+        ["Name"] = "AutoDisable",
+        ["Min"] = 10,
+        ["Max"] = 100,
+        ["Function"] = function() end,
+        ["Default"] = 50
+    })
+    AntiDeathVelocity = AntiDeath["CreateSlider"]({
+        ["Name"] = "Velocity",
+        ["Min"] = 1,
+        ["Max"] = 661,
+        ["Function"] = function() end,
+        ["Default"] = 35
+    })
+    AntiDeathCframe = AntiDeath["CreateSlider"]({
+        ["Name"] = "Cframe",
+        ["Min"] = 1,
+        ["Max"] = 1500,
+        ["Function"] = function() end,
+        ["Default"] = 35
+    })
+    AntiDeathTween = AntiDeath["CreateSlider"]({
+        ["Name"] = "Tween",
+        ["Min"] = 1,
+        ["Max"] = 1500,
+        ["Function"] = function() end,
+        ["Default"] = 1000
+    })
+    AntiDeathNotification = AntiDeath["CreateToggle"]({
+        ["Name"] = "Notification",
+        ["Default"] = true,
+        ["Function"] = function(callback) end
+    })
+    NotificationDuration = AntiDeath["CreateSlider"]({
+        ["Name"] = "Duration",
+        ["HoverText"] = "Notification duration time",
+        ["Min"] = 1,
+        ["Max"] = 10,
+        ["Function"] = function() end,
+        ["Default"] = 5
+    })
+end)
+
+run(function()
+    local DamageIndicator = {["Enabled"] = false}
+    if (not game:IsLoaded()) then game.Loaded:Wait() end
+    local IndicatorMessages = {
+        "Thump!";
+        "Pop!";
+        "Bang!";
+        "Smack!";
+        "Hit!";
+        "Pow!";
+        "Bang!";
+        "Wham!";
+        "Boom!";
+    }
+    local IndicatorColor = {
+        Color3.new(0.666667, 0.333333, 1);
+        Color3.new(1, 0.666667, 0);
+        Color3.new(0.666667, 1, 0);
+        Color3.new(1, 0.333333, 1);
+    }
+    DamageIndicator = GuiLibrary["ObjectsThatCanBeSaved"]["RenderWindow"]["Api"]["CreateOptionsButton"]({
+        ["Name"] = "DamageIndicator",
+        ["HoverText"] = "Changes the regular indicator text",
+        ["Function"] = function(callback)
+            if callback then 
+                pcall(function()
+                    workspace.ChildAdded:Connect(function(Child)
+                        if (Child:IsA("Part") and Child.Name == "DamageIndicatorPart") then
+                            local _Message = IndicatorMessages[math.random(1, #IndicatorMessages)];
+                            local _Color = IndicatorColor[math.random(1, #IndicatorColor)];
+                
+                            Child.BillboardGui.Frame.TextLabel.Text = _Message
+                            Child.BillboardGui.Frame.TextLabel.TextColor3 = _Color
+                        end
+                    end)
+                end)
+            end
+        end
+    })
+end)
+
+run(function()
+	local Changed = {["Enabled"] = false}
+	local ThemeChanger = {["Enabled"] = false}
+	local SelectedTheme = {["Value"] = "ChillPurpleSky"}
+	local AvaiableThemes = {
+		["ChillPurpleSky"] = function() 
+			task.spawn(function()
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=5260808177"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=5260653793"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=5260817288"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=5260800833"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=5260811073"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=5260824661"
+				game.Lighting.FogColor = Color3.new(236, 88, 241)
+				game.Lighting.FogEnd = "200"
+				game.Lighting.FogStart = "0"
+				game.Lighting.Ambient = Color3.new(0.5, 0, 1)
+			end)
+		end,
+		["SpaceSky"] = function() 
+			task.spawn(function()
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=1735468027"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=1735500192"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=1735467260"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=1735467682"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=1735466772"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=1735500898"
+				game.Lighting.FogColor = Color3.new(236, 88, 241)
+				game.Lighting.FogEnd = "200"
+				game.Lighting.FogStart = "0"
+				game.Lighting.Ambient = Color3.new(0.5, 0, 1)
+			end)
+		end,
+		["MidNightPurpleSky"] = function() 
+			task.spawn(function()
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=187713366"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=187712428"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=187712836"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=187713755"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=187714525"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=187712111"
+				game.Lighting.FogColor = Color3.new(236, 88, 241)
+				game.Lighting.FogEnd = "200"
+				game.Lighting.FogStart = "0"
+				game.Lighting.Ambient = Color3.new(0.5, 0, 1)
+			end)
+		end,
+		["Chill"] = function()
+			task.spawn(function()
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=169210090"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=169210108"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=169210121"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=169210133"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=169210143"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=169210149"
+			end)
+		end,
+		["MountainSky"] = function()
+			task.spawn(function()
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=174457450"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=174457519"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=174457566"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=174457651"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=174457702"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=174457748"
+			end)
+		end,
+		["Darkness"] = function()
+			task.spawn(function()
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=2240134413"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=2240136039"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=2240130790"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=2240133550"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=2240132643"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=2240135222"
+			end)
+		end,
+		["RealisticSky"] = function() 
+			task.spawn(function()
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=144933338"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=144931530"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=144933262"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=144933244"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=144933299"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=144931564"
+			end)
+		end,
+        ["AnimeSky"] = function() 
+			task.spawn(function()
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=6778646360"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=6778658683"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=6778648039"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=6778649136"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=6778650519"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=6778658364"
+			end)
+        end,
+        ["PinkSky"] = function() 
+			task.spawn(function()
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=271042516"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=271077243"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=271042556"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=271042310"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=271042467"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=271077958"
+			end)
+        end,
+        ["MoonLight"] = function() 
+			task.spawn(function()
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=12064107"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=12064152"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=12064121"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=12063984"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=12064115"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=12064131"
+			end)
+        end,
+        ["AstroidBelt"] = function() 
+			task.spawn(function()
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=16262356578"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=16262358026"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=16262360469"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=16262362003"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=16262363873"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=16262366016"
+			end)
+        end,
+        ["RainySky"] = function() 
+			task.spawn(function()
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=4495864450"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=4495864887"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=4495865458"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=4495866035"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=4495866584"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=4495867486"
+			end)
+        end,
+        ["RainyNight"] = function() 
+			task.spawn(function()
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=149679669"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=149681979"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=149679690"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=149679709"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=149679722"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=149680199"
+			end)
+        end,
+        ["StormyNight"] = function() 
+			task.spawn(function()
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=15502511288"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=15502508460"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=15502510289"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=15502507918"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=15502509398"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=15502511911"
+			end)
+		end
+	}
+	ThemeChanger = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
+		["Name"] = "ThemeChanger",
+		["Function"] = function(callback) 
+			if callback then
+				AvaiableThemes[SelectedTheme["Value"]]() 
+			else
+				game.Lighting.Sky.SkyboxBk = "http://www.roblox.com/asset/?id=7018684000"
+				game.Lighting.Sky.SkyboxDn = "http://www.roblox.com/asset/?id=6334928194"
+				game.Lighting.Sky.SkyboxFt = "http://www.roblox.com/asset/?id=7018684000"
+				game.Lighting.Sky.SkyboxLf = "http://www.roblox.com/asset/?id=7018684000"
+				game.Lighting.Sky.SkyboxRt = "http://www.roblox.com/asset/?id=7018684000"
+				game.Lighting.Sky.SkyboxUp = "http://www.roblox.com/asset/?id=7018689553"
+				game.Lighting.FogColor = Color3.new(1, 1, 1)
+				game.Lighting.FogEnd = "10000"
+				game.Lighting.FogStart = "0"
+				game.Lighting.Ambient = Color3.new(0, 0, 0)
+			end
+		end,
+		["ExtraText"] = function()
+			return SelectedTheme["Value"]
+		end
+	})	
+	SelectedTheme = ThemeChanger.CreateDropdown({
+		["Name"] = "Theme",
+		["Function"] = function() end,
+		["List"] = {"ChillPurpleSky","SpaceSky","MidNightPurpleSky", "RealisticSky", "Darkness", "MountainSky", "Chill", "RainySky", "AnimeSky", "StormyNight", "PinkSky", "RainyNight", "AstroidBelt", "MoonLight"}
+	})
+end)
+
+run(function()
+    local VelocityBoost = {["Enabled"] = false}
+	local Boost = {["Value"] = 500}
+    local Gravity = {["Enabled"] = false}
+    local GravityValue = {["Value"] = 100}
+    local NotificationDuration = {["Value"] = 3}
+    local BoostNotification = {["Enabled"] = false}
+    VelocityBoost = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"]["CreateOptionsButton"]({
+        ["Name"] = "VelocityBoost",
+        ["HoverText"] = "Velocity HighJump\nCustomizable",
+        ["Function"] = function(callback)
+            if callback then 
+				VelocityBoost.ToggleButton()
+				if Gravity["enabled"] then
+                    workspace["Gravity"] = GravityValue["Value"]
+                end
+                game:GetService("Players").LocalPlayer["Character"].PrimaryPart["Velocity"] = Vector3.new(0, Boost.Value, 0)
+                height = Boost["Value"] + GravityValue["Value"]
+                if BoostNotification["Enabled"] then
+                    warningNotification("VelocityBoost", "Jumped a total of "..height.." studs.", NotificationDuration.Value)
+                end
+            end
+        end
+    })
+    GravityValue = VelocityBoost["CreateSlider"]({
+        ["Name"] = "GravityValue",
+        ["Min"] = 1,
+        ["Max"] = 196,
+        ["Default"] = "100",
+        ["Function"] = function() end
+    })
+    Boost = VelocityBoost["CreateSlider"]({
+        ["Name"] = "Boost",
+        ["Min"] = 1,
+        ["Max"] = 600,
+        ["Default"] = "500",
+        ["Function"] = function() end
+    })
+    NotificationDuration = VelocityBoost["CreateSlider"]({
+        ["Name"] = "Notify Duration",
+        ["Min"] = 1,
+        ["Max"] = 10,
+        ["Default"] = "3",
+        ["Function"] = function() end
+    })
+    Gravity = VelocityBoost["CreateToggle"]({
+        ["Name"] = "EnableGravity",
+        ["Default"] = true,
+        ["Function"] = function(callback) end
+    })
+    BoostNotification = VelocityBoost["CreateToggle"]({
+        ["Name"] = "BoostNotification",
+        ["Default"] = true,
+        ["Function"] = function(callback) end
+    })
+end)
+
+run(function()
+    local RemotesConnect = {["Enabled"] = false}
+    local EnableDelay = {["Enabled"] = false}
+    local RemotesConnectDelay = {["Value"] = 3}
+    local RemoteMode = {["Value"] = "Dragonbreath"}
+    RemotesConnect = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"]["CreateOptionsButton"]({
+        ["Name"] = "RemotesConnect",
+        ["HoverText"] = "Spams remotes!",
+        ["Function"] = function(callback)
+            if callback then 
+                repeat task.wait()
+                    if EnableDelay["Enabled"] then
+                        task.wait(RemotesConnectDelay["Value"] / 100)
+                    end
+                    if RemoteMode["Value"] == "PartyPooper" then
+                        replicatedStorageService['events-@easy-games/game-core:shared/game-core-networking@getEvents.Events'].useAbility:FireServer'PARTY_POPPER'
+                    elseif RemoteMode["Value"] == "DragonBreath" then
+                        game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("node_modules"):WaitForChild("@rbxts"):WaitForChild("net"):WaitForChild("out"):WaitForChild("_NetManaged"):WaitForChild("DragonBreath"):FireServer({player = game:GetService("Players").LocalPlayer})
+                    elseif RemoteMode["Value"] == "YuziDash" then
+                        game:GetService("ReplicatedStorage"):FindFirstChild("events-@easy-games/game-core:shared/game-core-networking@getEvents.Events").useAbility:FireServer("dash")
+                    elseif RemoteMode["Value"] == "Terra" then 
+                        if bedwars.CooldownController:getRemainingCooldown('BLOCK_KICK') == 0 then
+                            bedwars.AbilityController:useAbility('BLOCK_KICK')
+                        end
+                    end
+                until not RemotesConnect["Enabled"]
+            end
+        end
+    })
+    RemoteMode = RemotesConnect["CreateDropdown"]({
+        ["Name"] = "Mode",
+        ["List"] = {
+            "PartyPopper",
+            "DragonBreath",
+            "Terra"
+        },
+        ["Function"] = function() end,
+    })
+    EnableDelay = RemotesConnect["CreateToggle"]({
+        ["Name"] = "EnableDelay",
+        ["Default"] = true,
+        ["Function"] = function(callback) end
+    })
+    RemotesConnectDelay = RemotesConnect["CreateSlider"]({
+        ["Name"] = "Delay",
+        ["Min"] = 1,
+        ["Max"] = 10,
+        ["Default"] = "3",
+        ["Function"] = function() end
+    })
+end)
