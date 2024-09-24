@@ -9707,3 +9707,105 @@ run(function()
         ["Function"] = function() end
     })
 end)
+
+run(function()
+    local CameraUnlocker = {["Enabled"] = false}
+	local CameraUnlockerMode = {["Value"] = 'Infinite'}
+    local CameraUnlockerSlider = {["Value"] = 200}
+    CameraUnlocker = GuiLibrary["ObjectsThatCanBeSaved"]["RenderWindow"]["Api"]["CreateOptionsButton"]({
+        ["Name"] = "CameraUnlocker",
+        ["HoverText"] = "Unlocks the camera max zoom distance\nCustomizable",
+        ["Function"] = function(callback)
+            if callback then 
+				if CameraUnlockerMode["Value"] == "Infinite" then
+					game.Players.LocalPlayer.CameraMaxZoomDistance = 9e9
+				elseif CameraUnlockerMode["Value"] == "Custom" then
+                    game.Players.LocalPlayer.CameraMaxZoomDistance = CameraUnlockerSlider["Value"]
+                else 
+                    game.Players.LocalPlayer.CameraMaxZoomDistance = 13
+                end
+            end
+        end
+    })
+	CameraUnlockerMode = CameraUnlocker["CreateDropdown"]({
+		["Name"] = 'Mode',
+		["List"] = {
+			'Infinite',
+			'Custom'
+		},
+		["HoverText"] = 'Mode to unlock the zoom.',
+		["Function"] = function() end
+	})
+    CameraUnlockerSlider = CameraUnlocker["CreateSlider"]({
+        ["Name"] = "Unlock value",
+        ["Min"] = 1,
+        ["Max"] = 10000,
+        ["HoverText"] = "Sets the camera max zoom distance value",
+        ["Function"] = function() end,
+        ["Default"] = 200
+    })
+end)
+
+local anchorchar = function(bool)
+    for i, v in pairs(players:GetPlayers()) do
+        if v ~= lplr and isAlive(v) then
+            v.Character.PrimaryPart.Anchored = bool
+        end
+    end
+end
+
+run(function()
+    local BackTrack = {}
+    BackTrack = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
+        Name = "BackTrack",
+        HoverText = "BackTrack",
+        Function = function(callback)
+            if callback then 
+                local lastUpdate = tick()
+                local delay = 0.3
+                repeat
+                    local currentTime = tick()
+                    if (currentTime - lastUpdate) > delay then
+                        anchorchar(true)
+                        lastUpdate = currentTime
+                        task.wait(delay)
+                    end
+                    anchorchar(false)
+                    task.wait(0)
+                until not BackTrack.Enabled
+            end
+        end
+    })
+end)
+
+run(function()
+    local KillFeedRemover = {}
+    KillFeedRemover = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"]["CreateOptionsButton"]({
+        Name = "KillFeedRemover",
+        HoverText = "Removes the kill feed",
+        Function = function(call)
+            lplr.PlayerGui.KillFeedGui.Enabled = not call
+        end
+    })
+end)
+
+run(function()
+    local MultiAura = {}
+    MultiAura = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"]["CreateOptionsButton"]({
+        Name = "MultiAura",
+        HoverText = "Requires Kaida",
+        Function = function(call)
+            repeat
+               task.wait()
+                 local args = {
+                    [1] = {
+                        ["clientTime"] = tick(),
+                        ["direction"] = game.Players.LocalPlayer.Character.PrimaryPart.CFrame.LookVector,
+                        ["position"] =game.Players.LocalPlayer.Character.PrimaryPart.Position
+                    }
+                }
+                game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("node_modules"):WaitForChild("@rbxts"):WaitForChild("net"):WaitForChild("out"):WaitForChild("_NetManaged"):WaitForChild("SummonerClawAttackRequest"):FireServer(unpack(args))
+            until not MultiAura["Enabled"]
+        end
+    })
+end)
