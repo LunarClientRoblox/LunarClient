@@ -8,8 +8,6 @@
 >
 > Lunar Client is a configuration designed for the popular script VapeV4. This configuration boasts an impressive array of features, including:
 
-> # Modules:
-
 > - Visual Modules: 
 > - Enhance your visual experience with our cutting-edge visual modules.
 > - Movement Modules: 
