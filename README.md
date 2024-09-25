@@ -5,7 +5,7 @@
 
 
 > [!IMPORTANT]  
-> Crucial information necessary for users to succeed.
+# Crucial information necessary for users to succeed.
 
 Lunar Client is a configuration designed for the popular script VapeV4. This configuration boasts an impressive array of features, including:
 
