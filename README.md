@@ -26,6 +26,5 @@ All credits go to:
 - @V1per-Dev
 - @nobitches6243
 
-<img src="LunarClient.png" alt="Preview" width="1020" style="box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5), -10px -10px 20px rgba(255, 255, 255, 0.3);" />
 
 
