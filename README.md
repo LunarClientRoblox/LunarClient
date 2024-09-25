@@ -2,8 +2,9 @@
 > This project is still in beta, many bugs and problemes may occur this script is currently unstable
 > Any problems join our discord: https://discord.gg/mrXN9xsS
 
-> [!IMPORTANT]
-  
+
+
+# > [!IMPORTANT] 
 # Introduction to Lunar Client:
 
 Lunar Client is a configuration designed for the popular script VapeV4. This configuration boasts an impressive array of features, including:
