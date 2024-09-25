@@ -1,7 +1,7 @@
 > [!CAUTION]
 > This project is still in beta, many bugs and problemes may occur this script is currently unstable
 > Any problems join our discord: https://discord.gg/mrXN9xsS
-
+ <br />
 
 
 > [!IMPORTANT] 
